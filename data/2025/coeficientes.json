@@ -303,6 +303,16 @@
       "valor": 1.3,
       "status": "a_confirmar",
       "fonte": "docs/pendencias.md §7"
+    },
+    "receitasOutrasBi": {
+      "valor": 44.4,
+      "status": "a_confirmar",
+      "fonte": "docs/pendencias.md §24"
+    },
+    "custoDividaFracaoSelic": {
+      "valor": 0.7,
+      "status": "a_confirmar",
+      "fonte": "docs/pendencias.md §24"
     }
   },
   "subsidios": {

@@ -136,6 +136,7 @@ export function Receitas({ estado, decisoes, previa, ajustar }: EditorProps) {
           <Dados linhas={[
             { label: t('consumo'), valor: bilhoes(fluxo.receitaConsumoBi, 2) },
             { label: t('empresas'), valor: bilhoes(fluxo.receitaEmpresasBi, 2) },
+            { label: t('outrasReceitas'), valor: bilhoes(fluxo.receitaOutrasBi, 2) },
             { label: t('ajusteReceitaRenuncias'), valor: biAssinado(fluxo.variacaoRenunciasBi, 2), tom: tomDoSaldo(fluxo.variacaoRenunciasBi) },
             { label: t('receitaTotalProjetada'), valor: bilhoes(fluxo.receitaTotalBi, 2), total: true },
             { label: t('despesaPrimaria'), valor: bilhoes(fluxo.despesaPrimariaBi, 2), total: true },
