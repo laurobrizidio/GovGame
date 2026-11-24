@@ -1,0 +1,761 @@
+{
+  "turno": {
+    "mandatoMeses": {
+      "valor": 48,
+      "status": "confirmado",
+      "fonte": "MotorTurno §1–3"
+    },
+    "anoMeses": {
+      "valor": 12,
+      "status": "confirmado",
+      "fonte": "MotorTurno §1–3"
+    },
+    "carenciaMeses": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "MotorTurno §1–3"
+    },
+    "historicoMensal": {
+      "valor": 12,
+      "status": "confirmado",
+      "fonte": "MotorTurno §1–3"
+    },
+    "historicoIncentivos": {
+      "valor": 3,
+      "status": "confirmado",
+      "fonte": "MotorTurno §1–3"
+    },
+    "aprovacaoImpeachment": {
+      "valor": 15,
+      "status": "confirmado",
+      "fonte": "MotorTurno §4"
+    },
+    "mesesCalote": {
+      "valor": 3,
+      "status": "confirmado",
+      "fonte": "MotorTurno §4"
+    },
+    "ipcaHiperinflacaoMensal": {
+      "valor": 50,
+      "status": "confirmado",
+      "fonte": "MotorTurno §4"
+    },
+    "mesesImpeachment": {
+      "valor": 3,
+      "status": "a_confirmar",
+      "fonte": "MotorTurno §4"
+    },
+    "mesesHiperinflacao": {
+      "valor": 3,
+      "status": "a_confirmar",
+      "fonte": "MotorTurno §4"
+    },
+    "notaAprovacaoPeso": {
+      "valor": 0.3,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaAprovacaoPior": {
+      "valor": 15,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaAprovacaoMelhor": {
+      "valor": 70,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaDividaPeso": {
+      "valor": 0.2,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaDividaPior": {
+      "valor": 100,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaDividaMelhor": {
+      "valor": 70,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaQualidadePeso": {
+      "valor": 0.15,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaQualidadePior": {
+      "valor": 0,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaQualidadeMelhor": {
+      "valor": 100,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaPibPeso": {
+      "valor": 0.15,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaPibPior": {
+      "valor": -2,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaPibMelhor": {
+      "valor": 4,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaIpcaPeso": {
+      "valor": 0.1,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaIpcaPior": {
+      "valor": 10,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaIpcaMelhor": {
+      "valor": 3,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaDesempregoPeso": {
+      "valor": 0.1,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaDesempregoPior": {
+      "valor": 10,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    },
+    "notaDesempregoMelhor": {
+      "valor": 4,
+      "status": "confirmado",
+      "fonte": "MotorTurno §7"
+    }
+  },
+  "ir": {
+    "lafferLimiar": {
+      "valor": 30,
+      "status": "confirmado",
+      "fonte": "MotorIR §3.1"
+    },
+    "lafferPerdaPorPp": {
+      "valor": 0.018,
+      "status": "confirmado",
+      "fonte": "MotorIR §3.1"
+    },
+    "lafferPiso": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "MotorIR §3.1"
+    },
+    "consumoPib": {
+      "valor": 0.018,
+      "status": "confirmado",
+      "fonte": "MotorIR §3.2 e §6"
+    },
+    "consumoIpca": {
+      "valor": 0.00055,
+      "status": "confirmado",
+      "fonte": "MotorIR §3.3 e §6"
+    },
+    "fugaPorPp": {
+      "valor": 1,
+      "status": "confirmado",
+      "fonte": "MotorIR §3.4"
+    },
+    "eficienciaMinima": {
+      "valor": 0.8,
+      "status": "confirmado",
+      "fonte": "MotorIR §3.5"
+    },
+    "sensibilidadeBase": {
+      "valor": 150,
+      "status": "confirmado",
+      "fonte": "MotorIR §4.1"
+    },
+    "sensibilidadeDemais": {
+      "valor": 85,
+      "status": "confirmado",
+      "fonte": "MotorIR §4.1"
+    },
+    "injusticaPorPp": {
+      "valor": 1.3,
+      "status": "confirmado",
+      "fonte": "MotorIR §4.2"
+    },
+    "aliquotaMaxima": {
+      "valor": 40,
+      "status": "confirmado",
+      "fonte": "apps/web/AGENTS.md §Componentes reutilizáveis"
+    }
+  },
+  "orcamento": {
+    "riscoFaixaBaixa": {
+      "valor": 35,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §7"
+    },
+    "riscoFaixaAlta": {
+      "valor": 70,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §7"
+    },
+    "riscoMaximo": {
+      "valor": 100,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §7"
+    },
+    "premioFaixaAlta": {
+      "valor": 1,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §7"
+    },
+    "premioMaximo": {
+      "valor": 4,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §7"
+    },
+    "pesoPrimario": {
+      "valor": 0.4,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §7"
+    },
+    "pesoDivida": {
+      "valor": 0.4,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §7"
+    },
+    "pesoJuros": {
+      "valor": 0.2,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §7"
+    },
+    "caixaMinimoBi": {
+      "valor": 1000,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §12"
+    },
+    "riscoInicioCrise": {
+      "valor": 90,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §12"
+    },
+    "riscoFimCrise": {
+      "valor": 80,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §12"
+    },
+    "vencimentosBi": {
+      "valor": 163,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §12"
+    },
+    "crisePopularidade": {
+      "valor": -1,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §12"
+    },
+    "notaServicoInicial": {
+      "valor": 100,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §11"
+    },
+    "degradacaoInicial": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §11"
+    },
+    "degradacaoMaxima": {
+      "valor": 8,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §11"
+    },
+    "recuperacao": {
+      "valor": 5,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §11"
+    },
+    "qualidadePopularidade": {
+      "valor": 0.03,
+      "status": "confirmado",
+      "fonte": "MotorOrcamento §11"
+    },
+    "infraestruturaIpca": {
+      "valor": null,
+      "status": "pendente",
+      "fonte": "MotorOrcamento §6"
+    },
+    "saudeEducacaoPib": {
+      "valor": null,
+      "status": "pendente",
+      "fonte": "MotorOrcamento §6"
+    },
+    "limiteSlider": {
+      "valor": 1.3,
+      "status": "a_confirmar",
+      "fonte": "docs/pendencias.md §7"
+    }
+  },
+  "subsidios": {
+    "retornoIntegral": {
+      "valor": 0.1,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §4"
+    },
+    "retornoMetade": {
+      "valor": 0.2,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §4"
+    },
+    "taxaRetornoMetade": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §4"
+    },
+    "multiplicadorRenuncia": {
+      "valor": 0.14,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §4"
+    },
+    "multiplicadorSubsidio": {
+      "valor": null,
+      "status": "pendente",
+      "fonte": "MotorSubsidios §4"
+    },
+    "defasagemPib": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §4"
+    },
+    "agroIpca": {
+      "valor": null,
+      "status": "pendente",
+      "fonte": "MotorSubsidios §4"
+    },
+    "energiaIpca": {
+      "valor": null,
+      "status": "pendente",
+      "fonte": "MotorSubsidios §4"
+    },
+    "custoPoliticoRenuncia": {
+      "valor": null,
+      "status": "pendente",
+      "fonte": "MotorSubsidios §6"
+    }
+  },
+  "bc": {
+    "reuniaoIntervalo": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "passoSelic": {
+      "valor": 0.25,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "movimentoMaximo": {
+      "valor": 1,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "fracaoMovimento": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "selicMinima": {
+      "valor": -5,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "selicMaxima": {
+      "valor": 30,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "alvoIpca": {
+      "valor": 1.5,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "alvoPib": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "alvoPremio": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "MotorBC §2"
+    },
+    "selicDefasagemCredito": {
+      "valor": 3,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "creditoSelic": {
+      "valor": 0.6,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "creditoPib": {
+      "valor": 1,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "creditoInadimplencia": {
+      "valor": 1,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "inadimplenciaMediaSelic": {
+      "valor": 9,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "inadimplenciaSelic": {
+      "valor": 0.1,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "inadimplenciaDesemprego": {
+      "valor": 0.25,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "inadimplenciaAproximacao": {
+      "valor": 0.1,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "inadimplenciaAperto": {
+      "valor": 6,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "creditoEmAperto": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "MotorBC §4"
+    },
+    "impulsoCreditoPib": {
+      "valor": null,
+      "status": "pendente",
+      "fonte": "MotorBC §4"
+    },
+    "altaDolarIntervencaoPct": {
+      "valor": 3,
+      "status": "confirmado",
+      "fonte": "MotorBC §5"
+    },
+    "vendaReservasPorPpUsdBi": {
+      "valor": 10,
+      "status": "confirmado",
+      "fonte": "MotorBC §5"
+    },
+    "fracaoMaxVendaReservas": {
+      "valor": 0.1,
+      "status": "confirmado",
+      "fonte": "MotorBC §5"
+    },
+    "rendimentoReservas": {
+      "valor": 0.003,
+      "status": "confirmado",
+      "fonte": "MotorBC §5"
+    },
+    "reservasLimiarUsdBi": {
+      "valor": 200,
+      "status": "confirmado",
+      "fonte": "MotorBC §5"
+    },
+    "premioReservas": {
+      "valor": 1,
+      "status": "confirmado",
+      "fonte": "MotorBC §5"
+    },
+    "pixAnualBi": {
+      "valor": 35360,
+      "status": "confirmado",
+      "fonte": "MotorBC §6"
+    },
+    "pixTransacoesBi": {
+      "valor": 79.8,
+      "status": "confirmado",
+      "fonte": "MotorBC §6"
+    },
+    "cartoesAnualBi": {
+      "valor": 4500,
+      "status": "confirmado",
+      "fonte": "MotorBC §6"
+    },
+    "cartoesTransacoesBi": {
+      "valor": 48.1,
+      "status": "confirmado",
+      "fonte": "MotorBC §6"
+    },
+    "compulsorioVistaPct": {
+      "valor": 21,
+      "status": "confirmado",
+      "fonte": "MotorBC §6"
+    }
+  },
+  "macro": {
+    "pibMensalBase": {
+      "valor": 0.19,
+      "status": "confirmado",
+      "fonte": "MotorMacro §2"
+    },
+    "pibPotencial": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "MotorMacro §2"
+    },
+    "pibMensalReferenciaBi": {
+      "valor": 1060,
+      "status": "confirmado",
+      "fonte": "MotorMacro §2"
+    },
+    "selicMediaMeses": {
+      "valor": 6,
+      "status": "confirmado",
+      "fonte": "MotorMacro §2"
+    },
+    "selicFreio": {
+      "valor": 0.02,
+      "status": "confirmado",
+      "fonte": "MotorMacro §2"
+    },
+    "ipcaInercia": {
+      "valor": 0.9,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaMetaPeso": {
+      "valor": 0.1,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaMetaMensal": {
+      "valor": 0.25,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaMetaAnual": {
+      "valor": 3,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaControladaLimite": {
+      "valor": 4.5,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaGalopanteLimiar": {
+      "valor": 8,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaSuperinflacaoLimiar": {
+      "valor": 50,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaDemanda": {
+      "valor": 0.02,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaDolar": {
+      "valor": 0.00125,
+      "status": "confirmado",
+      "fonte": "MotorMacro §3"
+    },
+    "ipcaHistoricoAproximado": {
+      "valor": 0.35,
+      "status": "a_confirmar",
+      "fonte": "MotorMacro §3"
+    },
+    "dolarPremio": {
+      "valor": 0.05,
+      "status": "confirmado",
+      "fonte": "MotorMacro §4"
+    },
+    "dolarFuga": {
+      "valor": 0.02,
+      "status": "confirmado",
+      "fonte": "MotorMacro §4"
+    },
+    "dolarSelic": {
+      "valor": 0.01,
+      "status": "confirmado",
+      "fonte": "MotorMacro §4"
+    },
+    "dolarIpca": {
+      "valor": 0.01,
+      "status": "confirmado",
+      "fonte": "MotorMacro §4"
+    },
+    "dolarAproximacao": {
+      "valor": 0.2,
+      "status": "confirmado",
+      "fonte": "MotorMacro §4"
+    },
+    "gastoMultiplicador": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "MotorMacro §5"
+    },
+    "gastoDefasagem": {
+      "valor": 1,
+      "status": "confirmado",
+      "fonte": "MotorMacro §5"
+    },
+    "dolarPib": {
+      "valor": 0.002,
+      "status": "confirmado",
+      "fonte": "MotorMacro §5"
+    },
+    "dolarPibDefasagem": {
+      "valor": 3,
+      "status": "confirmado",
+      "fonte": "MotorMacro §5"
+    }
+  },
+  "social": {
+    "inerciaAprovacao": {
+      "valor": 0.3333333333333333,
+      "status": "confirmado",
+      "fonte": "MotorSocial §3"
+    },
+    "miseraAprovacao": {
+      "valor": 4,
+      "status": "confirmado",
+      "fonte": "MotorSocial §4"
+    },
+    "okun": {
+      "valor": -0.25,
+      "status": "confirmado",
+      "fonte": "MotorSocial §5"
+    },
+    "desempregoPiso": {
+      "valor": 4,
+      "status": "confirmado",
+      "fonte": "MotorSocial §5"
+    },
+    "apertoIpcaInicio": {
+      "valor": 4.5,
+      "status": "a_confirmar",
+      "fonte": "MotorSocial §4"
+    },
+    "apertoIpcaFim": {
+      "valor": 8,
+      "status": "a_confirmar",
+      "fonte": "MotorSocial §4"
+    },
+    "apertoDesempregoInicio": {
+      "valor": 6,
+      "status": "a_confirmar",
+      "fonte": "MotorSocial §4"
+    },
+    "apertoDesempregoFim": {
+      "valor": 9,
+      "status": "a_confirmar",
+      "fonte": "MotorSocial §4"
+    },
+    "miseraIr": {
+      "valor": 0.5,
+      "status": "a_confirmar",
+      "fonte": "MotorSocial §4"
+    },
+    "miseraInadimplencia": {
+      "valor": 0.5,
+      "status": "a_confirmar",
+      "fonte": "MotorSocial §4"
+    },
+    "miseraProtecao": {
+      "valor": 0.5,
+      "status": "a_confirmar",
+      "fonte": "MotorSocial §4"
+    },
+    "miseraSaude": {
+      "valor": 0.03,
+      "status": "a_confirmar",
+      "fonte": "MotorSocial §4"
+    },
+    "satisfacaoInicial": {
+      "valor": 50,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "satisfacaoMultiplicador": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "inerciaSegmentos": {
+      "valor": 0.3333333333333333,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "unidadeSelic": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "unidadeDolar": {
+      "valor": 10,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "unidadeGasto": {
+      "valor": 10,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "unidadeRisco": {
+      "valor": 10,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "unidadeDivida": {
+      "valor": 5,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "unidadeFuga": {
+      "valor": 5,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "pressaoEntrada": {
+      "valor": 30,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "pressaoSaida": {
+      "valor": 40,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "pressaoTeto": {
+      "valor": 5,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    },
+    "pressaoCusto": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "MotorSocial §6"
+    }
+  }
+}

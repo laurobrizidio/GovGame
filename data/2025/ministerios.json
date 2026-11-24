@@ -1,0 +1,145 @@
+{
+  "saude": {
+    "inicialAnualBi": 241.61,
+    "fixoAnualBi": 144.966,
+    "pisoFracao": 0.6,
+    "pastas": [
+      "Saúde"
+    ]
+  },
+  "educacao": {
+    "inicialAnualBi": 200.49,
+    "fixoAnualBi": 120.294,
+    "pisoFracao": 0.6,
+    "pastas": [
+      "Educação"
+    ]
+  },
+  "ciencia": {
+    "inicialAnualBi": 16.68,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Ciência, Tecnologia e Inovação"
+    ]
+  },
+  "cultura": {
+    "inicialAnualBi": 6.62,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Cultura",
+      "Esportes"
+    ]
+  },
+  "trabalho": {
+    "inicialAnualBi": 121.51,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Trabalho e Emprego"
+    ]
+  },
+  "assistencia": {
+    "inicialAnualBi": 293.6,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Desenvolvimento e Assistência Social",
+      "Direitos Humanos",
+      "Mulheres",
+      "Igualdade Racial",
+      "Povos Indígenas"
+    ]
+  },
+  "infraestrutura": {
+    "inicialAnualBi": 74.04,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Transportes",
+      "Portos e Aeroportos",
+      "Minas e Energia",
+      "Comunicações",
+      "Cidades",
+      "Integração e Desenvolvimento Regional"
+    ]
+  },
+  "agro": {
+    "inicialAnualBi": 16.84,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Agricultura",
+      "Desenvolvimento Agrário",
+      "Pesca e Aquicultura"
+    ]
+  },
+  "ambiente": {
+    "inicialAnualBi": 4.13,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Meio Ambiente"
+    ]
+  },
+  "industria": {
+    "inicialAnualBi": 5.55,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Indústria e Comércio",
+      "Empreendedorismo",
+      "Turismo"
+    ]
+  },
+  "fazenda": {
+    "inicialAnualBi": 30.95,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Fazenda",
+      "Planejamento e Orçamento"
+    ]
+  },
+  "administracao": {
+    "inicialAnualBi": 7.24,
+    "fixoAnualBi": 2.57,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Gestão e Inovação",
+      "Casa Civil",
+      "Relações Institucionais",
+      "Secretaria-Geral",
+      "Secom",
+      "Presidência"
+    ]
+  },
+  "defesa": {
+    "inicialAnualBi": 133.58,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Defesa",
+      "Gabinete de Segurança Institucional"
+    ]
+  },
+  "exteriores": {
+    "inicialAnualBi": 5.09,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Relações Exteriores"
+    ]
+  },
+  "justica": {
+    "inicialAnualBi": 28.09,
+    "fixoAnualBi": 0,
+    "pisoFracao": 0.9,
+    "pastas": [
+      "Justiça e Segurança Pública",
+      "Advocacia-Geral da União",
+      "Controladoria-Geral da União"
+    ]
+  }
+}

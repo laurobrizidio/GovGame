@@ -1,0 +1,8 @@
+{
+  "name": "@govgame/simulador",
+  "private": true,
+  "type": "module",
+  "scripts": { "sim": "tsx src/main.ts", "typecheck": "tsc -p tsconfig.json" },
+  "dependencies": { "@govgame/engine": "workspace:*" },
+  "devDependencies": { "tsx": "^4.20.0" }
+}

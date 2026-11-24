@@ -1,0 +1,362 @@
+[
+  {
+    "id": "formais",
+    "variaveis": [
+      {
+        "indicador": "ipca",
+        "peso": -3
+      },
+      {
+        "indicador": "desemprego",
+        "peso": -2
+      },
+      {
+        "indicador": "ir.D",
+        "peso": -2
+      },
+      {
+        "indicador": "ir.C",
+        "peso": -2
+      },
+      {
+        "indicador": "pib",
+        "peso": 1
+      }
+    ]
+  },
+  {
+    "id": "informais",
+    "variaveis": [
+      {
+        "indicador": "desemprego",
+        "peso": -3
+      },
+      {
+        "indicador": "ipca",
+        "peso": -2
+      },
+      {
+        "indicador": "pib",
+        "peso": 2
+      }
+    ]
+  },
+  {
+    "id": "desempregados",
+    "variaveis": [
+      {
+        "indicador": "desemprego",
+        "peso": -3
+      },
+      {
+        "indicador": "gasto.assistencia",
+        "peso": 2
+      },
+      {
+        "indicador": "gasto.trabalho",
+        "peso": 2
+      }
+    ]
+  },
+  {
+    "id": "pequenosNegocios",
+    "variaveis": [
+      {
+        "indicador": "selic",
+        "peso": -3
+      },
+      {
+        "indicador": "pib",
+        "peso": 2
+      },
+      {
+        "indicador": "incentivo.servicos",
+        "peso": 2
+      },
+      {
+        "indicador": "gasto.administracao",
+        "peso": 1
+      }
+    ]
+  },
+  {
+    "id": "industriais",
+    "variaveis": [
+      {
+        "indicador": "incentivo.industria",
+        "peso": 3
+      },
+      {
+        "indicador": "selic",
+        "peso": -3
+      },
+      {
+        "indicador": "gasto.industria",
+        "peso": 1
+      }
+    ]
+  },
+  {
+    "id": "exportadores",
+    "variaveis": [
+      {
+        "indicador": "dolar",
+        "peso": 3
+      },
+      {
+        "indicador": "gasto.infraestrutura",
+        "peso": 2
+      },
+      {
+        "indicador": "gasto.exteriores",
+        "peso": 1
+      }
+    ]
+  },
+  {
+    "id": "rurais",
+    "variaveis": [
+      {
+        "indicador": "incentivo.agro",
+        "peso": 3
+      },
+      {
+        "indicador": "selic",
+        "peso": -2
+      },
+      {
+        "indicador": "dolar",
+        "peso": 2
+      },
+      {
+        "indicador": "gasto.agro",
+        "peso": 2
+      }
+    ]
+  },
+  {
+    "id": "energia",
+    "variaveis": [
+      {
+        "indicador": "incentivo.energia",
+        "peso": 3
+      },
+      {
+        "indicador": "selic",
+        "peso": -2
+      },
+      {
+        "indicador": "gasto.infraestrutura",
+        "peso": 1
+      }
+    ]
+  },
+  {
+    "id": "construcao",
+    "variaveis": [
+      {
+        "indicador": "incentivo.moradia",
+        "peso": 3
+      },
+      {
+        "indicador": "selic",
+        "peso": -3
+      },
+      {
+        "indicador": "pib",
+        "peso": 1
+      },
+      {
+        "indicador": "gasto.infraestrutura",
+        "peso": 1
+      }
+    ]
+  },
+  {
+    "id": "transportes",
+    "variaveis": [
+      {
+        "indicador": "incentivo.infraestrutura",
+        "peso": 3
+      },
+      {
+        "indicador": "gasto.infraestrutura",
+        "peso": 3
+      },
+      {
+        "indicador": "selic",
+        "peso": -1
+      }
+    ]
+  },
+  {
+    "id": "servidores",
+    "variaveis": [
+      {
+        "indicador": "gasto.administracao",
+        "peso": 3
+      },
+      {
+        "indicador": "ipca",
+        "peso": -2
+      },
+      {
+        "indicador": "ir.C",
+        "peso": -1
+      },
+      {
+        "indicador": "ir.B",
+        "peso": -1
+      }
+    ]
+  },
+  {
+    "id": "educadores",
+    "variaveis": [
+      {
+        "indicador": "gasto.educacao",
+        "peso": 3
+      },
+      {
+        "indicador": "ipca",
+        "peso": -2
+      }
+    ]
+  },
+  {
+    "id": "estudantes",
+    "variaveis": [
+      {
+        "indicador": "gasto.educacao",
+        "peso": 3
+      },
+      {
+        "indicador": "desemprego",
+        "peso": -2
+      },
+      {
+        "indicador": "gasto.ciencia",
+        "peso": 1
+      },
+      {
+        "indicador": "gasto.cultura",
+        "peso": 1
+      }
+    ]
+  },
+  {
+    "id": "profissionaisSaude",
+    "variaveis": [
+      {
+        "indicador": "gasto.saude",
+        "peso": 3
+      },
+      {
+        "indicador": "ipca",
+        "peso": -2
+      }
+    ]
+  },
+  {
+    "id": "pesquisadores",
+    "variaveis": [
+      {
+        "indicador": "gasto.ciencia",
+        "peso": 3
+      },
+      {
+        "indicador": "gasto.educacao",
+        "peso": 2
+      }
+    ]
+  },
+  {
+    "id": "aposentados",
+    "variaveis": [
+      {
+        "indicador": "ipca",
+        "peso": -3
+      },
+      {
+        "indicador": "gasto.saude",
+        "peso": 2
+      }
+    ]
+  },
+  {
+    "id": "beneficiarios",
+    "variaveis": [
+      {
+        "indicador": "gasto.assistencia",
+        "peso": 3
+      },
+      {
+        "indicador": "ipca",
+        "peso": -2
+      },
+      {
+        "indicador": "desemprego",
+        "peso": -1
+      }
+    ]
+  },
+  {
+    "id": "liberais",
+    "variaveis": [
+      {
+        "indicador": "ir.B",
+        "peso": -3
+      },
+      {
+        "indicador": "selic",
+        "peso": -2
+      },
+      {
+        "indicador": "pib",
+        "peso": 2
+      },
+      {
+        "indicador": "gasto.administracao",
+        "peso": 1
+      }
+    ]
+  },
+  {
+    "id": "familiasEndividadas",
+    "variaveis": [
+      {
+        "indicador": "inadimplencia",
+        "peso": -3
+      },
+      {
+        "indicador": "selic",
+        "peso": -2
+      },
+      {
+        "indicador": "ipca",
+        "peso": -2
+      }
+    ]
+  },
+  {
+    "id": "mercado",
+    "variaveis": [
+      {
+        "indicador": "risco",
+        "peso": -3
+      },
+      {
+        "indicador": "divida",
+        "peso": -2
+      },
+      {
+        "indicador": "fuga",
+        "peso": -2
+      },
+      {
+        "indicador": "ipca",
+        "peso": -1
+      }
+    ]
+  }
+]

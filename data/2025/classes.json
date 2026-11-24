@@ -1,0 +1,32 @@
+{
+  "E": {
+    "participacaoPct": 22.3,
+    "baseTributavelMensalBi": 9,
+    "aliquotaInicialPct": 0,
+    "propensaoConsumo": 0.95
+  },
+  "D": {
+    "participacaoPct": 27.1,
+    "baseTributavelMensalBi": 24,
+    "aliquotaInicialPct": 7.5,
+    "propensaoConsumo": 0.9
+  },
+  "C": {
+    "participacaoPct": 31.7,
+    "baseTributavelMensalBi": 54,
+    "aliquotaInicialPct": 15,
+    "propensaoConsumo": 0.85
+  },
+  "B": {
+    "participacaoPct": 15,
+    "baseTributavelMensalBi": 58,
+    "aliquotaInicialPct": 22.5,
+    "propensaoConsumo": 0.7
+  },
+  "A": {
+    "participacaoPct": 3.9,
+    "baseTributavelMensalBi": 44,
+    "aliquotaInicialPct": 27.5,
+    "propensaoConsumo": 0.45
+  }
+}

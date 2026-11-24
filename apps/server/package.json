@@ -1,0 +1,14 @@
+{
+  "name": "@govgame/server",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "tsx watch src/main.ts", "typecheck": "tsc -p tsconfig.json" },
+  "dependencies": {
+    "@govgame/engine": "workspace:*",
+    "better-sqlite3": "^12.4.0",
+    "drizzle-orm": "^0.44.0",
+    "fastify": "^5.6.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": { "@types/better-sqlite3": "^7.6.0", "tsx": "^4.20.0" }
+}

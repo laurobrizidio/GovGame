@@ -1,0 +1,22 @@
+{
+  "name": "govgame",
+  "private": true,
+  "packageManager": "pnpm@12.23.0",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @govgame/server --filter @govgame/web dev",
+    "build": "pnpm --filter @govgame/web build",
+    "test": "vitest run",
+    "test:engine": "vitest run packages/engine",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "sim": "pnpm --filter @govgame/simulador sim"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "eslint": "^9.39.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^4.0.0"
+  }
+}

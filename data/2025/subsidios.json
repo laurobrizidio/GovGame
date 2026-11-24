@@ -1,0 +1,86 @@
+{
+  "servicos": {
+    "renuncia": {
+      "inicialAnualBi": 106.6,
+      "disponivel": true,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    },
+    "subsidio": {
+      "inicialAnualBi": null,
+      "disponivel": false,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    }
+  },
+  "agro": {
+    "renuncia": {
+      "inicialAnualBi": 69.4,
+      "disponivel": true,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    },
+    "subsidio": {
+      "inicialAnualBi": 16.9,
+      "disponivel": true,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    }
+  },
+  "industria": {
+    "renuncia": {
+      "inicialAnualBi": 37.5,
+      "disponivel": true,
+      "status": "a_confirmar",
+      "fonte": "MotorSubsidios §3"
+    },
+    "subsidio": {
+      "inicialAnualBi": 5.3,
+      "disponivel": true,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    }
+  },
+  "energia": {
+    "renuncia": {
+      "inicialAnualBi": null,
+      "disponivel": false,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    },
+    "subsidio": {
+      "inicialAnualBi": 8.3,
+      "disponivel": true,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    }
+  },
+  "moradia": {
+    "renuncia": {
+      "inicialAnualBi": 21,
+      "disponivel": true,
+      "status": "a_confirmar",
+      "fonte": "MotorSubsidios §3 e §7 (projeção de 2026 a conferir com 2025)"
+    },
+    "subsidio": {
+      "inicialAnualBi": 8.6,
+      "disponivel": true,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    }
+  },
+  "infraestrutura": {
+    "renuncia": {
+      "inicialAnualBi": null,
+      "disponivel": false,
+      "status": "pendente",
+      "fonte": "MotorSubsidios §3 e §7"
+    },
+    "subsidio": {
+      "inicialAnualBi": 4.6,
+      "disponivel": true,
+      "status": "confirmado",
+      "fonte": "MotorSubsidios §3"
+    }
+  }
+}
