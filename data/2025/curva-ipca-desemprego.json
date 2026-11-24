@@ -1,0 +1,10 @@
+{
+  "status": "confirmado",
+  "fonte": "Decisão de calibração de Lauro, docs/pendencias.md, item 25",
+  "pontos": [
+    { "ipcaPct": 6.5, "efeitoPpAnual": 1 },
+    { "ipcaPct": 7.5, "efeitoPpAnual": 1.5 },
+    { "ipcaPct": 8.5, "efeitoPpAnual": 2.25 },
+    { "ipcaPct": 10, "efeitoPpAnual": 3.5 }
+  ]
+}

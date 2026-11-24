@@ -1,5 +1,6 @@
 export type * from './estado'
 export { agenda } from './agenda'
+export { coeficientesCalibraveis, ehCoeficienteCalibravel } from './coeficientes-calibraveis'
 export { criarEstadoInicial, decisoesIniciais } from './inicial'
 export { carregarParametros, parametros2025, CLASSES, INSTRUMENTOS, MINISTERIOS, SETORES, coef, decisoesSchema } from './params'
 export { validarTextos } from './params/textos'

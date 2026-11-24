@@ -34,6 +34,12 @@ export function motorMacro(
   const { ir, subsidios, bc } = entradas
   const { macro: anterior, fiscal, series } = estado
   const mesesAno = coef(params, 'turno', 'anoMeses')
+  // O MotorSocial apura o efeito em % do PIB anual. Os pesos do MotorIR usam bilhões por mês.
+  const pibMensalReferenciaBi = params.iniciais.pibAnualBi / mesesAno
+  const consumoEmprego = estado.social.consumoEmpregoPctPibAnual ?? 0
+  const consumoEmpregoAnterior = estado.historico.at(-2)?.social.consumoEmpregoPctPibAnual ?? consumoEmprego
+  const consumoEmpregoBi = consumoEmprego / 100 * pibMensalReferenciaBi
+  const variacaoConsumoEmpregoBi = (consumoEmprego - consumoEmpregoAnterior) / 100 * pibMensalReferenciaBi
   // MotorBC §4 ainda não especifica como o crescimento do crédito se converte em PIB.
   const avisos: Mensagem[] = [
     { codigo: 'macroCreditoPibPendente', params: {} },
@@ -52,6 +58,7 @@ export function motorMacro(
   const impulsosPib: Impulso[] = [
     { fonte: 'pibBase', valor: coef(params, 'macro', 'pibMensalBase') },
     { fonte: 'pibIr', valor: ir.impulsoPibPct },
+    { fonte: 'pibConsumoEmprego', valor: variacaoConsumoEmpregoBi * coef(params, 'ir', 'consumoPib') },
     { fonte: 'pibSelic', valor: -coef(params, 'macro', 'selicFreio') * (selicMediaAa - params.iniciais.selicAa) },
   ]
   if (gastoRecenteBi !== undefined && gastoAnteriorBi !== undefined) {
@@ -85,6 +92,7 @@ export function motorMacro(
     { fonte: 'ipcaMeta', valor: coef(params, 'macro', 'ipcaMetaPeso') * coef(params, 'macro', 'ipcaMetaMensal') },
     { fonte: 'ipcaDemanda', valor: coef(params, 'macro', 'ipcaDemanda') * (anterior.pibReal12mPct - coef(params, 'macro', 'pibPotencial')) },
     { fonte: 'ipcaIr', valor: ir.impulsoIpcaPct },
+    { fonte: 'ipcaConsumoEmprego', valor: consumoEmpregoBi * coef(params, 'ir', 'consumoIpca') },
   ]
   if (anterior.dolar12mPct != null) {
     impulsosIpca.push({ fonte: 'ipcaDolar', valor: coef(params, 'macro', 'ipcaDolar') * anterior.dolar12mPct })

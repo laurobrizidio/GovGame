@@ -2,7 +2,7 @@
   "name": "@govgame/web",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "vite", "build": "vite build", "typecheck": "tsc -p tsconfig.json" },
+  "scripts": { "dev": "vite", "dev:calibracao": "vite --mode calibracao", "build": "vite build", "typecheck": "tsc -p tsconfig.json" },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.2.0",
     "@fontsource/ibm-plex-sans": "^5.2.0",

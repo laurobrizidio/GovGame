@@ -46,6 +46,8 @@ export type Social = {
   aprovacaoPorClasse: PorClasse<number> | null
   efeitosNivelPorClasse: PorClasse<number>
   desempregoPct: number
+  efeitosDesempregoPpAnual?: { pib: number; ipca: number }
+  consumoEmpregoPctPibAnual?: number
   indiceMiseria: number
   segmentos: Segmento[]
   pressoesExibidas: string[]
@@ -114,7 +116,6 @@ export type FimDeJogo = {
 export type SaidasIR = {
   arrecadacaoBi: number
   arrecadacaoPorClasseBi: PorClasse<number>
-  eficienciaAdministracaoPct: number | null
   aliquotasVigentesPct: PorClasse<number>
   consumoBi: number
   impulsoPibPct: number
@@ -134,6 +135,7 @@ export type SaidasSubsidios = {
 }
 export type PreviewFiscal = {
   ir: SaidasIR
+  irAnunciado: Pick<SaidasIR, 'arrecadacaoBi' | 'arrecadacaoPorClasseBi'>
   subsidios: SaidasSubsidios
   fluxo: Fluxo
   avisos: Mensagem[]

@@ -2,7 +2,7 @@
   "name": "@govgame/server",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "tsx watch src/main.ts", "typecheck": "tsc -p tsconfig.json" },
+  "scripts": { "dev": "tsx watch src/main.ts", "dev:calibracao": "tsx watch src/main.ts --calibracao", "typecheck": "tsc -p tsconfig.json" },
   "dependencies": {
     "@govgame/engine": "workspace:*",
     "better-sqlite3": "^12.4.0",

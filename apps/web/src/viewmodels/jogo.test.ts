@@ -54,20 +54,28 @@ describe('apresentação das receitas', () => {
   })
 
   // MotorIR §5 e MotorTurno §2. A data e a alíquota efetiva vêm da prévia fiscal.
-  it('distingue aumento em carência, entrada no mês e arrecadação estimada', () => {
+  it('atualiza a arrecadação anunciada até 40% e distingue o valor que entra no Nominal', () => {
     const inicial = criarEstadoInicial(parametros2025)
     const decisoes = decisoesIniciais(parametros2025)
-    decisoes.aliquotasPct.C = 17
+    decisoes.aliquotasPct.C = 40
     const previa = preview(inicial, decisoes, parametros2025)
     const prevista = aliquotasPorClasse(inicial, decisoes, previa).find(linha => linha.classe === 'C')
-    expect(prevista).toMatchObject({ projetada: 15, situacao: t('vigenciaIr', { mes: 3 }) })
+    expect(prevista).toMatchObject({
+      projetada: 15, situacao: t('vigenciaIr', { mes: 3 }),
+      arrecadacao: 'R$ 212,54 bi/ano', arrecadacaoNoMes: 'R$ 97,20 bi/ano',
+    })
+    expect(previa.irAnunciado.arrecadacaoBi).toBeCloseTo(44.662)
+    expect(previa.fluxo.resultadoNominalBi).toBeCloseTo(preview(inicial, inicial.decisoes, parametros2025).fluxo.resultadoNominalBi)
 
     const mes1 = fecharMes(inicial, decisoes, parametros2025).proximoEstado
     const mes2 = fecharMes(mes1, decisoes, parametros2025).proximoEstado
-    mes2.fiscal.servicos.administracao.nota = 99
     const previaMes3 = preview(mes2, decisoes, parametros2025)
     const efetiva = aliquotasPorClasse(mes2, decisoes, previaMes3).find(linha => linha.classe === 'C')
-    expect(efetiva).toMatchObject({ projetada: 17, situacao: t('aliquotaMudaNoMes'), receitaEstimada: true })
+    expect(efetiva).toMatchObject({
+      projetada: 40, situacao: t('aliquotaMudaNoMes'),
+      arrecadacao: 'R$ 212,54 bi/ano', arrecadacaoNoMes: null,
+    })
+    expect(previaMes3.ir.arrecadacaoBi).toBeCloseTo(44.662)
   })
 })
 

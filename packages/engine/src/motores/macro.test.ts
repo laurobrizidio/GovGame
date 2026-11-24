@@ -10,7 +10,6 @@ function entradasDoEstado(estado: GameState) {
   const ir: SaidasIR = {
     arrecadacaoBi: estado.fluxo.receitaIrBi,
     arrecadacaoPorClasseBi: { E: 0, D: 1.8, C: 8.1, B: 13.05, A: 12.1 },
-    eficienciaAdministracaoPct: 100,
     aliquotasVigentesPct: estado.aliquotasVigentesPct,
     consumoBi: 0,
     impulsoPibPct: 0,
@@ -32,6 +31,30 @@ function entradasDoEstado(estado: GameState) {
 }
 
 describe('MotorMacro', () => {
+  it('aplica o consumo por emprego ao PIB e ao IPCA a partir do fechamento anterior', () => {
+    // Pesos do consumo do MotorIR §§3.2–3.3 e transmissão aprovada em docs/pendencias.md, item 25.
+    const estado = criarEstadoInicial(params)
+    const inicial = estado.historico[0]
+    estado.mes = 1
+    estado.social = { ...estado.social, consumoEmpregoPctPibAnual: 0.936 }
+    const anterior = { ...inicial, mes: 1, social: estado.social }
+    estado.historico = [inicial, anterior]
+
+    const impulsos = () => Object.fromEntries(motorMacro(estado, entradasDoEstado(estado), params)
+      .impulsos.map(({ fonte, valor }) => [fonte, valor]))
+    expect(impulsos().pibConsumoEmprego).toBeCloseTo(0.178308, 6)
+    expect(impulsos().ipcaConsumoEmprego).toBeCloseTo(0.0054483, 6)
+
+    estado.mes = 2
+    estado.historico.push({ ...anterior, mes: 2 })
+    expect(impulsos().pibConsumoEmprego).toBe(0)
+    expect(impulsos().ipcaConsumoEmprego).toBeCloseTo(0.0054483, 6)
+
+    estado.social = { ...estado.social, consumoEmpregoPctPibAnual: -0.936 }
+    expect(impulsos().pibConsumoEmprego).toBeCloseTo(-0.356616, 6)
+    expect(impulsos().ipcaConsumoEmprego).toBeCloseTo(-0.0054483, 6)
+  })
+
   // MotorMacro §2 e §3: crescimento base e composição do IPCA com as referências de 2025.
   it('compõe PIB nominal e inflação a partir das variáveis do mês fechado', () => {
     const estado = criarEstadoInicial(params)

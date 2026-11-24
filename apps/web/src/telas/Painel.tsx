@@ -1,16 +1,20 @@
 import { CalendarDays, Minus } from 'lucide-react'
 import {
-  agenda, CLASSES, MINISTERIOS, coef, parametros2025 as params,
+  agenda, CLASSES, MINISTERIOS, coef,
   type GameState, type PreviewFiscal, type ResultadoDoMes,
 } from '@govgame/engine'
 import { Barra, BarraRisco, BarrasHistorico, Cartao, LinkBotao, Manchete } from '../componentes/base'
-import { limiarImpeachment, num, pct, pp, pressaoTeto, sinal, valoresFluxo, type Aba } from '../viewmodels/jogo'
+import { usarParametros } from '../store/partida'
+import { num, pct, pp, sinal, valoresFluxo, type Aba } from '../viewmodels/jogo'
 import { t, textos, textoSegmento, traduzirMensagem } from '../viewmodels/textos'
 
 export default function Painel({ estado, previa, resultado, navegar, abrirHistorico }: {
   estado: GameState; previa: PreviewFiscal; resultado: ResultadoDoMes | null;
   navegar: (aba: Aba) => void; abrirHistorico: () => void
 }) {
+  const params = usarParametros()
+  const limiarImpeachment = coef(params, 'turno', 'aprovacaoImpeachment')
+  const pressaoTeto = coef(params, 'social', 'pressaoTeto')
   const { social, fiscal, historico } = estado
   const aprovacao = social.aprovacaoGeral
   const agendaDoMandato = agenda(estado, params)

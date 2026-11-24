@@ -1,11 +1,9 @@
 import type { CSSProperties, ReactNode } from 'react'
 import * as Slider from '@radix-ui/react-slider'
 import { AlertTriangle, ArrowRight } from 'lucide-react'
-import type { Mensagem } from '@govgame/engine'
-import {
-  criseInicio, faixaRiscoAlta, faixaRiscoBaixa, faixaRiscoMaxima, lafferLimiar, irMaximo,
-  num, pct, type Tom,
-} from '../viewmodels/jogo'
+import { coef, type Mensagem } from '@govgame/engine'
+import { usarParametros } from '../store/partida'
+import { num, pct, type Tom } from '../viewmodels/jogo'
 import { t, traduzirMensagem } from '../viewmodels/textos'
 
 export function Cartao({ titulo, detalhe, children, className = '' }: {
@@ -56,15 +54,21 @@ export function Barra({ valor, maximo = 100, tom = 'positivo' }: { valor: number
 }
 
 export function BarraRisco({ valor }: { valor: number | null }) {
+  const params = usarParametros()
+  const criseInicio = coef(params, 'orcamento', 'riscoInicioCrise')
+  const faixaRiscoAlta = coef(params, 'orcamento', 'riscoFaixaAlta')
+  const faixaRiscoBaixa = coef(params, 'orcamento', 'riscoFaixaBaixa')
+  const faixaRiscoMaxima = coef(params, 'orcamento', 'riscoMaximo')
+  const escala = (marca: number) => `${marca * 100 / faixaRiscoMaxima}%`
   return <div className="faixas-risco" aria-hidden="true" style={{
-    '--inicio-ambar': `${faixaRiscoBaixa}%`, '--inicio-vermelho': `${faixaRiscoAlta}%`,
+    '--inicio-ambar': escala(faixaRiscoBaixa), '--inicio-vermelho': escala(faixaRiscoAlta),
   } as CSSProperties}>
     <div className="faixas-risco-trilho">
-      {valor !== null && <span className="faixa-marcador" style={{ left: `${valor * 100 / faixaRiscoMaxima}%` }} />}
+      {valor !== null && <span className="faixa-marcador" style={{ left: escala(valor) }} />}
     </div>
     <div className="faixas-risco-legenda">
-      {[0, faixaRiscoBaixa, faixaRiscoAlta, criseInicio].map(marca =>
-        <span key={marca} style={{ left: `${marca * 100 / faixaRiscoMaxima}%` }}>
+      {[...new Set([0, faixaRiscoBaixa, faixaRiscoAlta, criseInicio])].map(marca =>
+        <span key={marca} style={{ left: escala(marca) }}>
           {marca}{marca === criseInicio && <small>{t('crise')}</small>}
         </span>,
       )}
@@ -120,6 +124,9 @@ export function SliderZonas({ label, valor, maximo, referencia, onChange, zonas,
 export function SliderAliquota({ label, valor, referencia, projetada, tom, onChange }: {
   label: string; valor: number; referencia: number; projetada: number; tom: Tom; onChange: (valor: number) => void
 }) {
+  const params = usarParametros()
+  const lafferLimiar = coef(params, 'ir', 'lafferLimiar')
+  const irMaximo = coef(params, 'ir', 'aliquotaMaxima')
   const limiar = lafferLimiar * 100 / irMaximo
   const zonas = `linear-gradient(to right, var(--cor-cinza-trilho) ${limiar}%, transparent ${limiar}%), repeating-linear-gradient(135deg, var(--cor-ambar-medio) 0px 2px, var(--cor-ambar-faixa) 2px 5px)`
   return <div>

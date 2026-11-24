@@ -1,0 +1,43 @@
+{
+  "economia": {
+    "macro.pibMensalBase": "Crescimento mensal de base do PIB real",
+    "macro.pibPotencial": "Crescimento potencial do PIB real",
+    "macro.ipcaMetaMensal": "Meta mensal do IPCA",
+    "macro.ipcaDemanda": "Resposta do IPCA à demanda",
+    "macro.ipcaDolar": "Repasse cambial para o IPCA",
+    "macro.gastoMultiplicador": "Multiplicador do gasto público sobre o PIB",
+    "macro.selicFreio": "Resposta do PIB à Selic",
+    "macro.dolarSelic": "Resposta do dólar à Selic",
+    "macro.dolarFuga": "Resposta do dólar à fuga de capitais",
+    "bc.alvoIpca": "Resposta da Selic à inflação",
+    "bc.alvoPib": "Resposta da Selic ao hiato do PIB",
+    "bc.creditoSelic": "Resposta do crédito à Selic",
+    "bc.creditoPib": "Resposta do crédito ao hiato do PIB",
+    "bc.inadimplenciaDesemprego": "Resposta da inadimplência ao desemprego",
+    "subsidios.multiplicadorRenuncia": "Multiplicador da renúncia fiscal sobre o PIB"
+  },
+  "contasPublicas": {
+    "orcamento.custoDividaFracaoSelic": "Parcela da Selic no custo básico da dívida",
+    "orcamento.receitasOutrasBi": "Outras receitas públicas mensais",
+    "ir.lafferLimiar": "Alíquota a partir da qual cai a eficiência do IR",
+    "ir.lafferPerdaPorPp": "Perda de eficiência acima do limiar do IR",
+    "ir.consumoPib": "Efeito do consumo induzido pelo IR sobre o PIB"
+  },
+  "social": {
+    "social.okun": "Resposta do desemprego ao hiato do PIB",
+    "social.consumoEmpregoPctPibAnualPorPp": {
+      "nome": "Resposta inicial do consumo à queda do desemprego (% do PIB anual por p.p.)",
+      "faixa": { "baixo": 0.765, "alto": 1.050 }
+    },
+    "social.satisfacaoInicial": "Satisfação de referência dos segmentos",
+    "social.unidadeGasto": "Escala de resposta social a gastos e incentivos",
+    "orcamento.degradacaoMaxima": "Perda máxima mensal de qualidade dos serviços",
+    "social.ipcaDesempregoPpAnualPorPp": "Resposta anual do desemprego ao IPCA abaixo do ponto neutro"
+  },
+  "politica": {
+    "social.miseraAprovacao": "Resposta da aprovação ao Índice de Miséria",
+    "orcamento.qualidadePopularidade": "Resposta da aprovação à qualidade dos serviços",
+    "social.pressaoTeto": "Número de pressões sociais sem penalidade adicional",
+    "turno.aprovacaoImpeachment": "Limiar de aprovação para contar meses de impeachment"
+  }
+}

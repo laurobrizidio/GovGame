@@ -3,6 +3,24 @@ import type { PorIncentivo, PorMinisterio } from '../estado'
 import { MINISTERIOS, SETORES, parametros2025 as params } from '../params'
 import { motorSocial } from './social'
 
+it('acelera o consumo abaixo de 2% de desemprego e chega a +25% no limite de 1%', () => {
+  // Canal aprovado e registrado em docs/pendencias.md, item 25.
+  const [estado, entradas] = preparar()
+  expect(motorSocial(estado, entradas, params).saidas.consumoEmpregoPctPibAnual).toBe(0)
+  estado.social.desempregoPct = params.iniciais.desempregoPct - 1
+  expect(motorSocial(estado, entradas, params).saidas.consumoEmpregoPctPibAnual).toBeCloseTo(0.936)
+  estado.social.desempregoPct = 3
+  expect(motorSocial(estado, entradas, params).saidas.consumoEmpregoPctPibAnual).toBeCloseTo(2.4336)
+  estado.social.desempregoPct = 2
+  expect(motorSocial(estado, entradas, params).saidas.consumoEmpregoPctPibAnual).toBeCloseTo(3.3696)
+  estado.social.desempregoPct = 1.5
+  expect(motorSocial(estado, entradas, params).saidas.consumoEmpregoPctPibAnual).toBeCloseTo(6.73823, 5)
+  estado.social.desempregoPct = 1
+  expect(motorSocial(estado, entradas, params).saidas.consumoEmpregoPctPibAnual).toBeCloseTo(15.90814, 5)
+  estado.social.desempregoPct = params.iniciais.desempregoPct + 1
+  expect(motorSocial(estado, entradas, params).saidas.consumoEmpregoPctPibAnual).toBeCloseTo(-0.936)
+})
+
 function preparar(): [Parameters<typeof motorSocial>[0], Parameters<typeof motorSocial>[1]] {
   const { iniciais } = params
   const aliquotasVigentesPct = { E: 0, D: 7.5, C: 15, B: 22.5, A: 27.5 }
@@ -28,7 +46,7 @@ function preparar(): [Parameters<typeof motorSocial>[0], Parameters<typeof motor
   ])) as Parameters<typeof motorSocial>[1]['subsidios']['renunciasVigentesBi']
   return [
     {
-      macro: { ...macro, pibReal12mPct: 2 },
+      macro: { ...macro, pibReal12mPct: 2, ipca12mPct: 4.5 },
       social: {
         aprovacaoGeral: 60, aprovacaoPorClasse: { E: 60, D: 60, C: 60, B: 60, A: 60 },
         efeitosNivelPorClasse: { ...efeitoPorClasse }, desempregoPct: iniciais.desempregoPct,
@@ -50,7 +68,7 @@ function preparar(): [Parameters<typeof motorSocial>[0], Parameters<typeof motor
         vendaReservasUsdBi: 0,
       },
       ir: {
-        aliquotasVigentesPct, efeitoPorClasse, arrecadacaoBi: 35, eficienciaAdministracaoPct: 100,
+        aliquotasVigentesPct, efeitoPorClasse, arrecadacaoBi: 35,
         arrecadacaoPorClasseBi: { E: 0, D: 1.8, C: 8.1, B: 13.05, A: 12.1 },
         fugaCapital: 0, progressividadePp: 23.75, penalidadeInjustica: 0, consumoBi: 0,
         impulsoIpcaPct: 0, impulsoPibPct: 0,
@@ -108,8 +126,8 @@ describe('MotorSocial', () => {
     expect(motorSocial(estado, entradas, params).saidas.indiceMiseria).toBeCloseTo(16.8)
   })
 
-  // MotorSocial §5: Okun usa o PIB anual do mês anterior e desemprego tem piso de 4%.
-  it('usa o PIB defasado no desemprego e respeita o piso estrutural', () => {
+  // MotorSocial §5 e docs/pendencias.md, item 25: Okun usa o PIB do mês anterior.
+  it('usa o PIB defasado no desemprego e desacelera a queda perto de 1%', () => {
     const [estado, entradas] = preparar()
     estado.macro.pibReal12mPct = -2
     entradas.macro.pibReal12mPct = 8
@@ -117,7 +135,42 @@ describe('MotorSocial', () => {
 
     estado.macro.pibReal12mPct = 8
     estado.social.desempregoPct = 4.01
-    expect(motorSocial(estado, entradas, params).saidas.desempregoPct).toBe(4)
+    // Limite prático e desaceleração registrados em docs/pendencias.md, item 25.
+    expect(motorSocial(estado, entradas, params).saidas.desempregoPct).toBeCloseTo(3.9282)
+    estado.social.desempregoPct = 1.01
+    const pertoDoLimite = motorSocial(estado, entradas, params).saidas.desempregoPct
+    expect(pertoDoLimite).toBeGreaterThan(1)
+    expect(pertoDoLimite).toBeLessThan(1.01)
+    estado.social.desempregoPct = 1
+    expect(motorSocial(estado, entradas, params).saidas.desempregoPct).toBe(1)
+  })
+
+  it('usa o IPCA de 12 meses do fechamento anterior em ambos os sentidos', () => {
+    // Regra aprovada em docs/pendencias.md, item 25.
+    const [estado, entradas] = preparar()
+    entradas.macro.ipca12mPct = 8.5
+    const saidas = () => motorSocial(estado, entradas, params).saidas
+    expect(saidas().desempregoPct).toBeCloseTo(5.6, 8)
+    estado.macro.ipca12mPct = 3.5
+    expect(saidas().desempregoPct).toBeCloseTo(5.6 - 0.25 / 12, 8)
+    expect(saidas().efeitosDesempregoPpAnual?.ipca).toBe(-0.25)
+    estado.macro.ipca12mPct = 5.5
+    expect(saidas().desempregoPct).toBeCloseTo(5.6 + 0.50 / 12, 8)
+    expect(saidas().efeitosDesempregoPpAnual?.ipca).toBe(0.50)
+  })
+
+  it('interpola a curva aprovada de IPCA e limita o desemprego total a 25%', () => {
+    // Pontos da curva anual e teto registrados em docs/pendencias.md, item 25.
+    const [estado, entradas] = preparar()
+    const pontos = [[6.5, 1], [7.5, 1.5], [8.5, 2.25], [9.25, 2.875], [10, 3.5], [11.5, 4.75]]
+    for (const [ipca, aumento] of pontos) {
+      estado.macro.ipca12mPct = ipca
+      const saidas = motorSocial(estado, entradas, params).saidas
+      expect(saidas.efeitosDesempregoPpAnual?.ipca).toBeCloseTo(aumento, 8)
+      expect(saidas.desempregoPct).toBeCloseTo(5.6 + aumento / 12, 8)
+    }
+    estado.social.desempregoPct = 24.9
+    expect(motorSocial(estado, entradas, params).saidas.desempregoPct).toBe(25)
   })
 
   // MotorSocial §§2–3: o novo efeito de nível entra a 1/3 e o fluxo geral entra integralmente.

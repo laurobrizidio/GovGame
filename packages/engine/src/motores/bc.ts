@@ -1,24 +1,99 @@
 import { limitar, media } from '../calculo'
 import type { BC, GameState, Parametros, ResultadoMotor } from '../estado'
 import { coef } from '../params'
-import { premioReservas } from './orcamento'
 
-export function calcularSelicAlvo(ipca12m: number, pib12m: number, premioAa: number, params: Parametros) {
+export function calcularSelicAlvo(ipca12m: number, pib12m: number, params: Parametros) {
   return params.iniciais.selicAa
     + coef(params, 'bc', 'alvoIpca') * (ipca12m - params.iniciais.ipca12mPct)
     + coef(params, 'bc', 'alvoPib') * (pib12m - coef(params, 'macro', 'pibPotencial'))
-    + coef(params, 'bc', 'alvoPremio') * premioAa
+}
+
+function indicadoresNasMetas(estado: Pick<GameState, 'macro' | 'social'>, params: Parametros) {
+  const metaIpca = coef(params, 'macro', 'ipcaMetaAnual')
+  const toleranciaIpca = coef(params, 'macro', 'ipcaControladaLimite') - metaIpca
+  const metaDesemprego = coef(params, 'bc', 'metaDesempregoPct')
+  const metaPib = coef(params, 'macro', 'pibPotencial')
+  return Math.abs(estado.macro.ipca12mPct - metaIpca) <= toleranciaIpca
+    && Math.abs(estado.social.desempregoPct - metaDesemprego) <= coef(params, 'bc', 'metaDesempregoToleranciaPct')
+    && Math.abs(estado.macro.pibReal12mPct - metaPib) <= coef(params, 'bc', 'metaPibToleranciaPct')
+}
+
+function convergenciaNeutraAtiva(estado: GameState, params: Parametros) {
+  const intervalo = coef(params, 'bc', 'reuniaoIntervalo')
+  const reuniao = (estado.mes + 1) % intervalo === 0
+  const reunioesAnteriores = estado.historico.filter(registro =>
+    registro.mes < estado.mes && (registro.mes + 1) % intervalo === 0,
+  )
+  const observacoes = reuniao ? [...reunioesAnteriores, estado] : reunioesAnteriores
+  const duasUltimasReunioes = observacoes.slice(-2)
+  if (duasUltimasReunioes.length !== 2 || !duasUltimasReunioes.every(registro => indicadoresNasMetas(registro, params))) {
+    return false
+  }
+  const [anterior, atual] = duasUltimasReunioes
+  return Math.abs(atual.macro.ipca12mPct - anterior.macro.ipca12mPct)
+      <= coef(params, 'bc', 'tendenciaIpcaLimiarPp')
+    && Math.abs(atual.social.desempregoPct - anterior.social.desempregoPct)
+      <= coef(params, 'bc', 'tendenciaDesempregoLimiarPp')
+}
+
+function direcaoTendencia(variacao: number, limiar: number): -1 | 0 | 1 {
+  if (variacao > limiar) return 1
+  if (variacao < -limiar) return -1
+  return 0
+}
+
+function observacoesDeReuniao(estado: GameState, params: Parametros) {
+  const intervalo = coef(params, 'bc', 'reuniaoIntervalo')
+  return estado.historico.filter(registro => registro.mes < estado.mes
+    && (registro.mes === 0 || (registro.mes + 1) % intervalo === 0))
+}
+
+function ajustePorTendencias(estado: GameState, params: Parametros): { movimentoAa: number; substituirBase: boolean } | null {
+  const observacoes = observacoesDeReuniao(estado, params)
+  const anterior = observacoes.at(-1)
+  if (!anterior) return null
+
+  const variacaoIpca = estado.macro.ipca12mPct - anterior.macro.ipca12mPct
+  const variacaoDesemprego = estado.social.desempregoPct - anterior.social.desempregoPct
+  const tendenciaIpca = direcaoTendencia(variacaoIpca, coef(params, 'bc', 'tendenciaIpcaLimiarPp'))
+  const tendenciaDesemprego = direcaoTendencia(variacaoDesemprego, coef(params, 'bc', 'tendenciaDesempregoLimiarPp'))
+  if (tendenciaIpca === 0 && tendenciaDesemprego === 0) return null
+
+  if (tendenciaIpca === 1 && tendenciaDesemprego === 1) {
+    const anteriorAoAnterior = observacoes.at(-2)
+    const persistiuAltaConjunta = anteriorAoAnterior !== undefined
+      && direcaoTendencia(anterior.macro.ipca12mPct - anteriorAoAnterior.macro.ipca12mPct,
+        coef(params, 'bc', 'tendenciaIpcaLimiarPp')) === 1
+      && direcaoTendencia(anterior.social.desempregoPct - anteriorAoAnterior.social.desempregoPct,
+        coef(params, 'bc', 'tendenciaDesempregoLimiarPp')) === 1
+    return {
+      movimentoAa: persistiuAltaConjunta ? coef(params, 'bc', 'passoSelic') : 0,
+      substituirBase: true,
+    }
+  }
+
+  const movimentoIpca = tendenciaIpca === 0
+    ? 0 : coef(params, 'bc', 'tendenciaIpcaPeso') * variacaoIpca
+  const passoDesemprego = tendenciaDesemprego === 1 ? -coef(params, 'bc', 'passoSelic')
+    : tendenciaDesemprego === -1 ? coef(params, 'bc', 'passoSelic') : 0
+  return { movimentoAa: movimentoIpca + passoDesemprego, substituirBase: false }
 }
 
 export function motorBC(estado: GameState, params: Parametros): ResultadoMotor<BC> {
   const anteriores = params.iniciais
-  const premioAa = estado.fiscal.premioRiscoAa ?? premioReservas(estado.bc.reservasUsdBi, params)
-  const selicAlvoAa = calcularSelicAlvo(estado.macro.ipca12mPct, estado.macro.pibReal12mPct, premioAa, params)
+  const reuniao = (estado.mes + 1) % coef(params, 'bc', 'reuniaoIntervalo') === 0
+  const selicAlvoAa = convergenciaNeutraAtiva(estado, params)
+    ? coef(params, 'bc', 'selicNeutraAa')
+    : calcularSelicAlvo(estado.macro.ipca12mPct, estado.macro.pibReal12mPct, params)
   const passo = coef(params, 'bc', 'passoSelic')
   const distancia = (selicAlvoAa - estado.bc.selicAa) * coef(params, 'bc', 'fracaoMovimento')
-  const movimentoBruto = Math.sign(distancia) * Math.round(Math.abs(distancia) / passo) * passo
+  const movimentoBase = Math.sign(distancia) * Math.round(Math.abs(distancia) / passo) * passo
+  const ajusteTendencia = reuniao ? ajustePorTendencias(estado, params) : null
+  const movimentoComposto = ajusteTendencia?.substituirBase
+    ? ajusteTendencia.movimentoAa : movimentoBase + (ajusteTendencia?.movimentoAa ?? 0)
+  const movimentoBruto = Math.sign(movimentoComposto)
+    * Math.round(Math.abs(movimentoComposto) / passo) * passo
   const maximo = coef(params, 'bc', 'movimentoMaximo')
-  const reuniao = (estado.mes + 1) % coef(params, 'bc', 'reuniaoIntervalo') === 0
   const selicAa = limitar(estado.bc.selicAa + (reuniao ? limitar(movimentoBruto, -maximo, maximo) : 0),
     coef(params, 'bc', 'selicMinima'), coef(params, 'bc', 'selicMaxima'))
   const selicDefasada = estado.series.selicAa.at(-coef(params, 'bc', 'selicDefasagemCredito')) ?? anteriores.selicAa

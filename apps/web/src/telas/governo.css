@@ -364,6 +364,30 @@ button:disabled { cursor: default; }
 .historico-seletor { display: flex; align-items: center; gap: 8px; color: var(--cor-suave); font-size: 13px; }
 .historico-seletor select { min-height: 40px; padding: 6px 8px; border: 1px solid var(--cor-cinza-medio); border-radius: 8px; background: var(--cor-cartao); color: var(--cor-tinta); }
 
+.calibracao-grid { display: grid; grid-template-columns: 205px minmax(0, 1fr); gap: var(--espaco); align-items: start; }
+.calibracao-motores { display: grid; gap: 4px; padding: 14px; }
+.calibracao-motores h2 { padding: 4px 10px; }
+.calibracao-motores button { text-align: left; min-height: 39px; padding: 7px 10px; border-radius: 7px; }
+.calibracao-motores button:hover { background: var(--cor-painel); }
+.calibracao-motores button[aria-current] { background: var(--cor-verde-claro); color: var(--cor-verde-escuro); font-weight: 600; }
+.calibracao-ferramentas { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.calibracao-busca { position: relative; flex: 1 0 240px; max-width: 380px; color: var(--cor-suave); }
+.calibracao-busca svg { position: absolute; top: 11px; left: 11px; pointer-events: none; }
+.calibracao :is(input[type="search"], input[type="text"]) {
+  min-height: 40px; padding: 6px 10px; border: 1px solid var(--cor-cinza-medio);
+  border-radius: 8px; background: var(--cor-cartao); color: var(--cor-tinta);
+}
+.calibracao .calibracao-busca input { padding-left: 36px; width: 100%; }
+.calibracao-retorno { display: grid; gap: 8px; margin-block: 12px; }
+.calibracao-retorno ul { padding-left: 16px; list-style: disc; }
+.calibracao-tabela { width: 100%; border-collapse: collapse; text-align: left; }
+.calibracao-tabela thead { background: var(--cor-painel); }
+.calibracao-tabela :is(th, td) { padding: 10px; border-bottom: 1px solid var(--cor-linha-suave); }
+.calibracao-tabela td { width: 150px; }
+.calibracao-tabela input { width: 100%; }
+.calibracao-tabela small { display: block; color: var(--cor-suave); font-weight: 400; }
+.calibracao-tabela [data-editado="true"] { background: var(--cor-ambar-fundo); }
+
 @media (max-width: 1260px) {
   .barra-topo, .conteudo { padding-inline: 23px; }
   .barra-topo { gap: 13px; }

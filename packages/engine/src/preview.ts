@@ -1,6 +1,7 @@
+import { somar } from './calculo'
 import type { Decisoes, GameState, Parametros, PreviewFiscal } from './estado'
 import { decisoesIniciais } from './inicial'
-import { motorIR } from './motores/ir'
+import { calcularArrecadacaoIrClasseBi, motorIR } from './motores/ir'
 import { motorOrcamento } from './motores/orcamento'
 import { motorSubsidios } from './motores/subsidios'
 import { CLASSES, coef, decisoesSchema, INSTRUMENTOS, MINISTERIOS, SETORES } from './params'
@@ -39,9 +40,18 @@ export function calcularMotoresFiscais(estado: GameState, decisoes: Decisoes, pa
 }
 
 export function preview(estado: GameState, decisoes: Decisoes, params: Parametros): PreviewFiscal {
-  const { ir, subsidios, orcamento } = calcularMotoresFiscais(estado, validarDecisoes(decisoes, params), params)
+  const validas = validarDecisoes(decisoes, params)
+  const { ir, subsidios, orcamento } = calcularMotoresFiscais(estado, validas, params)
+  const arrecadacaoPorClasseBi = { ...ir.saidas.arrecadacaoPorClasseBi }
+  for (const classe of CLASSES) {
+    const anunciada = validas.aliquotasPct[classe]
+    if (anunciada !== ir.saidas.aliquotasVigentesPct[classe]) {
+      arrecadacaoPorClasseBi[classe] = calcularArrecadacaoIrClasseBi(classe, anunciada, params)
+    }
+  }
   return {
     ir: ir.saidas, subsidios: subsidios.saidas, fluxo: orcamento.saidas,
+    irAnunciado: { arrecadacaoPorClasseBi, arrecadacaoBi: somar(Object.values(arrecadacaoPorClasseBi)) },
     avisos: [...ir.avisos, ...subsidios.avisos, ...orcamento.avisos],
   }
 }

@@ -1,20 +1,25 @@
 import { useMemo } from 'react'
 import {
-  CLASSES, coef, parametros2025 as params, projetar,
+  CLASSES, coef, projetar,
   type Decisoes, type GameState, type PreviewFiscal, type ResultadoDoMes, type Segmento,
 } from '@govgame/engine'
 import { Aviso, Barra, BarraRisco, BarrasHistorico, Cartao, Dados, SliderZonas } from '../componentes/base'
-import {
-  bilhoes, caixaMinimo, cotacao, criseFim, criseInicio, faixaRiscoAlta, faixaRiscoBaixa, faixaRiscoMaxima,
-  mesesAno, num, pct, pp, pressaoEntrada, pressaoSaida, pressaoTeto, trilhoes, usdBi,
-} from '../viewmodels/jogo'
+import { usarParametros } from '../store/partida'
+import { bilhoes, cotacao, mesesAno, num, pct, pp, sinal, trilhoes, usdBi } from '../viewmodels/jogo'
 import { nomeImpulso, t, textos, textoSegmento } from '../viewmodels/textos'
 
 export function Tesouro({ estado, decisoes, previa, ajustar }: {
   estado: GameState; decisoes: Decisoes; previa: PreviewFiscal; ajustar: (alterar: (decisoes: Decisoes) => Decisoes) => void
 }) {
+  const params = usarParametros()
   const { fiscal } = estado
-  const previsao = useMemo(() => projetar(estado, decisoes, mesesAno, params), [estado, decisoes])
+  const previsao = useMemo(() => projetar(estado, decisoes, mesesAno, params), [estado, decisoes, params])
+  const caixaMinimo = coef(params, 'orcamento', 'caixaMinimoBi')
+  const criseInicio = coef(params, 'orcamento', 'riscoInicioCrise')
+  const criseFim = coef(params, 'orcamento', 'riscoFimCrise')
+  const faixaRiscoAlta = coef(params, 'orcamento', 'riscoFaixaAlta')
+  const faixaRiscoBaixa = coef(params, 'orcamento', 'riscoFaixaBaixa')
+  const faixaRiscoMaxima = coef(params, 'orcamento', 'riscoMaximo')
   const pontos = [
     { mes: estado.mes, valor: fiscal.dividaPibPct },
     ...previsao.meses.map(({ proximoEstado }) => ({ mes: proximoEstado.mes, valor: proximoEstado.fiscal.dividaPibPct })),
@@ -93,8 +98,14 @@ export function Tesouro({ estado, decisoes, previa, ajustar }: {
 }
 
 export function Economia({ estado, resultado }: { estado: GameState; resultado: ResultadoDoMes | null }) {
+  const params = usarParametros()
   const { macro, bc } = estado
-  const impulsos = resultado?.trace.find(item => item.motor === 'macro')?.impulsos.filter(item => item.fonte.startsWith('pib')) ?? []
+  const selicNeutraAa = coef(params, 'bc', 'selicNeutraAa')
+  const statusMonetario = bc.selicAa > selicNeutraAa ? t('apertoMonetario')
+    : bc.selicAa < selicNeutraAa ? t('afrouxamentoMonetario') : t('neutra')
+  const impulsosMacro = resultado?.trace.find(item => item.motor === 'macro')?.impulsos ?? []
+  const impulsos = impulsosMacro.filter(item => item.fonte.startsWith('pib'))
+  const consumoNoIpca = impulsosMacro.find(item => item.fonte === 'ipcaConsumoEmprego')
   const maiorImpulso = Math.max(0.001, ...impulsos.map(item => Math.abs(item.valor)))
   const historico = estado.historico.slice(-mesesAno)
   const apertoCredito = coef(params, 'bc', 'inadimplenciaAperto')
@@ -105,12 +116,20 @@ export function Economia({ estado, resultado }: { estado: GameState; resultado: 
       <Cartao titulo={t('selic')}>
         <div className="par-numeros"><strong className="numero-grande">{pct(bc.selicAa, 2)}</strong>
           <span className="texto-suave">{t('alvo', { valor: pct(bc.selicAlvoAa, 2) })}</span></div>
+        <Dados linhas={[
+          { label: t('selicNeutra'), valor: pct(selicNeutraAa, 2) },
+          { label: t('statusMonetario'), valor: statusMonetario },
+        ]} />
         <BarrasHistorico pontos={historico.map(item => ({ mes: item.mes, valor: item.bc.selicAa }))} percentual />
         <p className="rodape-cartao">{t('selicNota')}</p>
       </Cartao>
       <Cartao titulo={t('ipca')} detalhe={<span className="texto-suave">{t('metaIpca', { valor: pct(coef(params, 'macro', 'ipcaMetaAnual'), 0) })}</span>}>
         <div className="par-numeros"><strong className="numero-grande">{pct(macro.ipca12mPct, 2)}</strong>
           <span className="texto-suave">{t('noMes', { valor: pct(macro.ipcaMensalPct, 2) })}</span></div>
+        {consumoNoIpca && <Dados linhas={[{
+          label: nomeImpulso(consumoNoIpca.fonte),
+          valor: t('noMes', { valor: pp(consumoNoIpca.valor, 3, true) }),
+        }]} />}
         <ul className="lista-regimes">{Object.entries(textos.regimes).map(([id, [nome, descricao]]) =>
           <li key={id} aria-current={id === macro.regimeInflacao ? 'true' : undefined}><span>{nome}</span><span>{descricao}</span></li>,
         )}</ul>
@@ -162,7 +181,7 @@ export function Economia({ estado, resultado }: { estado: GameState; resultado: 
   </div>
 }
 
-function CartaoSegmento({ segmento }: { segmento: Segmento }) {
+function CartaoSegmento({ segmento, pressaoEntrada }: { segmento: Segmento; pressaoEntrada: number }) {
   const texto = textoSegmento(segmento.id)
   return <article className="cartao-segmento" data-pressao={segmento.pressionando}>
     <h3>{texto?.[0] ?? segmento.id}</h3>
@@ -177,6 +196,10 @@ function CartaoSegmento({ segmento }: { segmento: Segmento }) {
 }
 
 export function Povo({ estado }: { estado: GameState }) {
+  const params = usarParametros()
+  const pressaoEntrada = coef(params, 'social', 'pressaoEntrada')
+  const pressaoSaida = coef(params, 'social', 'pressaoSaida')
+  const pressaoTeto = coef(params, 'social', 'pressaoTeto')
   const { social, macro } = estado
   return <div className="povo-grid">
     <div className="coluna">
@@ -206,9 +229,34 @@ export function Povo({ estado }: { estado: GameState }) {
         ]} />
       </Cartao>
       <Cartao titulo={t('desemprego')}>
-        <div className="par-numeros"><strong className="numero-grande">{pct(social.desempregoPct)}</strong>
-          <span className="texto-suave">{t('piso', { valor: pct(coef(params, 'social', 'desempregoPiso')) })}</span></div>
-        <p className="rodape-cartao">{t('desempregoNota')}</p>
+        <strong className="numero-grande">{pct(social.desempregoPct)}</strong>
+        {social.efeitosDesempregoPpAnual && <>
+          <Dados linhas={[
+            { label: t('pib'), valor: t('pontosPorAno', { valor: sinal(social.efeitosDesempregoPpAnual.pib, 2) }) },
+            { label: t('ipca'), valor: t('pontosPorAno', { valor: sinal(social.efeitosDesempregoPpAnual.ipca, 2) }) },
+          ]} />
+          <p className="texto-suave">{t('desempregoEfeitosAnuais')}</p>
+        </>}
+        <p className="rodape-cartao">{t('desempregoNota', {
+          limite: pct(coef(params, 'social', 'desempregoLimitePct')),
+          teto: pct(coef(params, 'social', 'desempregoTetoPct')),
+          ipca: pct(coef(params, 'social', 'ipcaDesempregoReferenciaPct')),
+        })}</p>
+      </Cartao>
+      <Cartao titulo={t('consumoEmpregoAnual')}>
+        <strong className="numero-grande compacto">
+          {social.consumoEmpregoPctPibAnual === undefined ? num(null)
+            : t('parcelaPibAnual', { valor: sinal(social.consumoEmpregoPctPibAnual, 3) })}
+        </strong>
+        {social.consumoEmpregoPctPibAnual !== undefined && <p className="texto-suave">
+          {t('variacaoConsumoFamiliasAnual', {
+            valor: sinal(social.consumoEmpregoPctPibAnual * params.iniciais.pibAnualBi / params.iniciais.consumoFamiliasAnualBi, 2),
+          })}
+        </p>}
+        <p className="rodape-cartao">{t('consumoEmpregoAnualNota', {
+          valor: pct(params.iniciais.desempregoPct),
+          aceleracao: pct(coef(params, 'social', 'consumoEmpregoInicioAceleracaoPct')),
+        })}</p>
       </Cartao>
     </div>
     <Cartao titulo={t('segmentosTitulo', { total: social.segmentos.length })}
@@ -216,7 +264,7 @@ export function Povo({ estado }: { estado: GameState }) {
     >
       <p className="texto-suave">{t('segmentosNota')}</p>
       <div className="segmentos-grid">
-        {social.segmentos.map(segmento => <CartaoSegmento key={segmento.id} segmento={segmento} />)}
+        {social.segmentos.map(segmento => <CartaoSegmento key={segmento.id} segmento={segmento} pressaoEntrada={pressaoEntrada} />)}
       </div>
       <p className="rodape-cartao">{t('pressaoLimiares', { entrada: pct(pressaoEntrada, 0), saida: pct(pressaoSaida, 0) })}</p>
     </Cartao>

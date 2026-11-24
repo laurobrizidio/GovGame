@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import curvaIpcaDesemprego from '../../../../data/2025/curva-ipca-desemprego.json'
+import iniciais2025 from '../../../../data/2025/iniciais.json'
 
 export const classeSchema = z.enum(['E', 'D', 'C', 'B', 'A'])
 export const ministerioSchema = z.enum([
@@ -102,7 +104,16 @@ export const parametrosSchema = z.object({
     'Cada segmento deve ter um ID único',
   ),
   coeficientes: z.record(z.string(), z.record(z.string(), coeficiente)),
+  curvaIpcaDesemprego: z.object({
+    status: z.literal('confirmado'),
+    fonte: z.string().trim().min(1),
+    pontos: z.array(z.object({ ipcaPct: naoNegativo, efeitoPpAnual: naoNegativo.positive() })).min(2)
+      .refine(pontos => pontos.every((ponto, i) => i === 0 ||
+        (ponto.ipcaPct > pontos[i - 1].ipcaPct && ponto.efeitoPpAnual > pontos[i - 1].efeitoPpAnual)),
+      'IPCA e efeito anual devem crescer entre os pontos da curva'),
+  }).prefault({ ...curvaIpcaDesemprego, status: 'confirmado' }),
   iniciais: z.object({
+    consumoFamiliasAnualBi: naoNegativo.positive().default(iniciais2025.consumoFamiliasAnualBi),
     pibAnualBi: naoNegativo.positive(), pibReal12mPct: z.number(), ipca12mPct: z.number(),
     dolar: naoNegativo.positive(), dolar12mPct: z.number(), selicAa: z.number(),
     dividaBi: naoNegativo, caixaBi: naoNegativo, riscoFiscal: percentual.nullable(),

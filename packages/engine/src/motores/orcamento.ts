@@ -23,7 +23,7 @@ export function premioReservas(reservasUsdBi: number, params: Parametros): numbe
 export function motorOrcamento(
   estado: Pick<GameState, 'macro' | 'fiscal' | 'series' | 'bc'>,
   decisoes: Decisoes,
-  ir: Pick<SaidasIR, 'arrecadacaoBi' | 'eficienciaAdministracaoPct'>,
+  ir: Pick<SaidasIR, 'arrecadacaoBi'>,
   subsidios: Pick<SaidasSubsidios, 'variacaoRenunciasBi' | 'subsidiosBi'>,
   params: Parametros,
 ): ResultadoMotor<Fluxo> {
@@ -65,7 +65,7 @@ export function motorOrcamento(
       variacaoRenunciasBi: subsidios.variacaoRenunciasBi,
       receitaTotalBi, gastosBi, pisosBi, previdenciaBi, subsidiosBi: subsidios.subsidiosBi,
       despesaPrimariaBi, resultadoPrimarioBi, jurosBi, resultadoNominalBi: resultadoPrimarioBi - jurosBi,
-      amortizacaoBi, estimado: ir.eficienciaAdministracaoPct === null || estado.fiscal.premioRiscoAa === null,
+      amortizacaoBi, estimado: estado.fiscal.premioRiscoAa === null,
     },
     impulsos: [],
     popularidade: [

@@ -1,5 +1,5 @@
 import {
-  CLASSES, MINISTERIOS, coef, decisoesIniciais, parametros2025 as params,
+  CLASSES, MINISTERIOS, coef, decisoesIniciais, parametros2025,
   type Decisoes, type GameState, type Instrumento, type PreviewFiscal, type RegistroMes,
   type ResultadoDoMes, type Setor, type TraceMotor,
 } from '@govgame/engine'
@@ -9,23 +9,9 @@ export const abas = Object.keys(textos.abas) as (keyof typeof textos.abas)[]
 export type Aba = keyof typeof textos.abas
 export type Tom = 'positivo' | 'negativo' | 'neutro'
 
-export const duracaoMandato = coef(params, 'turno', 'mandatoMeses')
-export const mesesAno = coef(params, 'turno', 'anoMeses')
+export const duracaoMandato = coef(parametros2025, 'turno', 'mandatoMeses')
+export const mesesAno = coef(parametros2025, 'turno', 'anoMeses')
 export const anosMandato = Math.ceil(duracaoMandato / mesesAno)
-export const limiarImpeachment = coef(params, 'turno', 'aprovacaoImpeachment')
-export const pressaoEntrada = coef(params, 'social', 'pressaoEntrada')
-export const pressaoSaida = coef(params, 'social', 'pressaoSaida')
-export const pressaoTeto = coef(params, 'social', 'pressaoTeto')
-export const caixaMinimo = coef(params, 'orcamento', 'caixaMinimoBi')
-export const criseInicio = coef(params, 'orcamento', 'riscoInicioCrise')
-export const criseFim = coef(params, 'orcamento', 'riscoFimCrise')
-export const faixaRiscoBaixa = coef(params, 'orcamento', 'riscoFaixaBaixa')
-export const faixaRiscoAlta = coef(params, 'orcamento', 'riscoFaixaAlta')
-export const faixaRiscoMaxima = coef(params, 'orcamento', 'riscoMaximo')
-export const lafferLimiar = coef(params, 'ir', 'lafferLimiar')
-export const irMaximo = coef(params, 'ir', 'aliquotaMaxima')
-export const lafferPiso = coef(params, 'ir', 'lafferPiso') * 100
-export const carenciaMeses = coef(params, 'turno', 'carenciaMeses')
 
 const formatadores = [0, 1, 2, 3].map(casas => new Intl.NumberFormat('pt-BR', {
   minimumFractionDigits: casas,
@@ -72,11 +58,12 @@ type Kpi = {
   subir: 'bom' | 'ruim' | 'neutro'
 }
 
-export function kpis(estado: RegistroMes): Kpi[] {
+export function kpis(estado: RegistroMes, params = parametros2025): Kpi[] {
   const { social, macro, bc, fiscal } = estado
+  const caixaMinimo = coef(params, 'orcamento', 'caixaMinimoBi')
   return [
     { id: 'aprovacao', valor: social.aprovacaoGeral, exibir: valor => pct(valor, 0), detalhe: social.aprovacaoGeral === null ? t('pendente') : t('aprovaçãoGeral'), aba: 'povo', subir: 'bom' },
-    { id: 'desemprego', valor: social.desempregoPct, exibir: pct, detalhe: t('piso', { valor: pct(coef(params, 'social', 'desempregoPiso')) }), aba: 'povo', subir: 'ruim' },
+    { id: 'desemprego', valor: social.desempregoPct, exibir: pct, detalhe: t('inicio', { valor: pct(params.iniciais.desempregoPct) }), aba: 'povo', subir: 'ruim' },
     { id: 'ipca', valor: macro.ipca12mPct, exibir: pct, detalhe: t('regime', { valor: textos.regimes[macro.regimeInflacao][0].toLowerCase() }), aba: 'economia', subir: 'neutro' },
     { id: 'selic', valor: bc.selicAa, exibir: valor => pct(valor, 2), detalhe: t('alvo', { valor: pct(bc.selicAlvoAa, 2) }), aba: 'economia', subir: 'neutro' },
     { id: 'pib', valor: macro.pibReal12mPct, exibir: pct, detalhe: t('potencial', { valor: pct(coef(params, 'macro', 'pibPotencial')) }), aba: 'economia', subir: 'bom' },
@@ -131,22 +118,19 @@ export function valoresFluxo({ fluxo }: PreviewFiscal) {
   ] as const
 }
 
-const baseDecisoes = decisoesIniciais(params)
-const limiteSlider = coef(params, 'orcamento', 'limiteSlider')
-const retornoIntegral = coef(params, 'subsidios', 'retornoIntegral')
-const retornoMetade = coef(params, 'subsidios', 'retornoMetade')
-
 function percentualDoTrilho(valor: number, maximo: number) {
   return maximo > 0 ? Math.min(100, Math.max(0, valor * 100 / maximo)) : 0
 }
 
-function zonaExpansao(valor: number, referencia: number) {
+function zonaExpansao(valor: number, referencia: number, retornoIntegral: number, retornoMetade: number) {
   if (valor > referencia * (1 + retornoMetade)) return t('expansaoCusto')
   if (valor > referencia * (1 + retornoIntegral)) return t('expansaoMetade')
   return t('expansaoIntegral')
 }
 
-export function gastosPorMinisterio(estado: GameState, decisoes: Decisoes, previa: PreviewFiscal) {
+export function gastosPorMinisterio(estado: GameState, decisoes: Decisoes, previa: PreviewFiscal, params = parametros2025) {
+  const baseDecisoes = decisoesIniciais(params)
+  const limiteSlider = coef(params, 'orcamento', 'limiteSlider')
   return MINISTERIOS.map(id => {
     const parametro = params.ministerios[id]
     const valor = decididoGasto(decisoes, id)
@@ -181,8 +165,7 @@ function decididoGasto(decisoes: Decisoes, id: typeof MINISTERIOS[number]) {
   return decisoes.gastosDiscricionariosBi[id]
 }
 
-export function aliquotasPorClasse(estado: GameState, decisoes: Decisoes, previa: PreviewFiscal) {
-  const receitaEstimada = previa.ir.eficienciaAdministracaoPct === null
+export function aliquotasPorClasse(estado: GameState, decisoes: Decisoes, previa: PreviewFiscal, params = parametros2025) {
   return CLASSES.map(classe => {
     const dados = params.classes[classe]
     const valor = decisoes.aliquotasPct[classe]
@@ -192,10 +175,12 @@ export function aliquotasPorClasse(estado: GameState, decisoes: Decisoes, previa
     const mesVigencia = carencia?.params.mes
     const emCarencia = typeof mesVigencia === 'number'
     return {
-      classe, valor, projetada, receitaEstimada,
+      classe, valor, projetada,
       nome: t('classe', { classe }),
       descricao: t('populacao', { valor: pct(dados.participacaoPct) }),
-      base: t('baseTributavel', { valor: bilhoes(dados.baseTributavelMensalBi) }),
+      base: t('baseTributavel', { valor: bilhoesPorAno(dados.baseTributavelMensalBi) }),
+      arrecadacao: bilhoesPorAno(previa.irAnunciado.arrecadacaoPorClasseBi[classe], 2),
+      arrecadacaoNoMes: emCarencia ? bilhoesPorAno(previa.ir.arrecadacaoPorClasseBi[classe], 2) : null,
       referencia: dados.aliquotaInicialPct,
       situacao: emCarencia ? t('vigenciaIr', { mes: mesVigencia })
         : projetada < vigente ? t('corteIr')
@@ -214,11 +199,13 @@ export function resumoIncentivos({ fluxo, subsidios }: PreviewFiscal) {
   ]
 }
 
-export function incentivo(estado: GameState, decisoes: Decisoes, setor: Setor, instrumento: Instrumento, previa: PreviewFiscal) {
+export function incentivo(estado: GameState, decisoes: Decisoes, setor: Setor, instrumento: Instrumento, previa: PreviewFiscal, params = parametros2025) {
+  const retornoIntegral = coef(params, 'subsidios', 'retornoIntegral')
+  const retornoMetade = coef(params, 'subsidios', 'retornoMetade')
   const dados = params.subsidios[setor][instrumento]
-  const referencia = baseDecisoes.incentivosBi[setor][instrumento]
+  const referencia = decisoesIniciais(params).incentivosBi[setor][instrumento]
   const valor = decisoes.incentivosBi[setor][instrumento]
-  const maximo = referencia * limiteSlider
+  const maximo = referencia * coef(params, 'orcamento', 'limiteSlider')
   const variacao = referencia > 0 ? valor / referencia - 1 : 0
   const carencia = instrumento === 'renuncia'
     ? previa.avisos.find(aviso => aviso.codigo === 'carenciaRenuncia' && aviso.params.setor === setor)
@@ -231,7 +218,7 @@ export function incentivo(estado: GameState, decisoes: Decisoes, setor: Setor, i
     : valor - estado.decisoes.incentivosBi[setor].subsidio
   const impactoAgendado = projetado - valor
   const situacao = emCarencia ? t('vigenciaRenuncia', { mes: mesVigencia })
-    : variacao < -0.00005 ? t('corte') : variacao > 0.00005 ? zonaExpansao(valor, referencia) : t('base')
+    : variacao < -0.00005 ? t('corte') : variacao > 0.00005 ? zonaExpansao(valor, referencia, retornoIntegral, retornoMetade) : t('base')
   return {
     disponivel: dados.disponivel, valor, referencia, maximo,
     descricao: dados.status === 'pendente' ? t('valorPendente') : t('naoSeAplica'),
@@ -262,7 +249,7 @@ export function incentivo(estado: GameState, decisoes: Decisoes, setor: Setor, i
 export function resumoMotor(etapa: TraceMotor) {
   switch (etapa.motor) {
     case 'ir':
-      return t('motorResumoIr', { receita: bilhoes(etapa.saidas.arrecadacaoBi), progressividade: pp(etapa.saidas.progressividadePp, 2) })
+      return t('motorResumoIr', { receita: bilhoesPorAno(etapa.saidas.arrecadacaoBi, 2), progressividade: pp(etapa.saidas.progressividadePp, 2) })
     case 'subsidios':
       return t('motorResumoSubsidios', { despesa: bilhoes(etapa.saidas.subsidiosBi, 2), receita: biAssinado(etapa.saidas.variacaoRenunciasBi, 2) })
     case 'orcamento':

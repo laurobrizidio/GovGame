@@ -4,6 +4,7 @@ import { and, asc, desc, eq } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { integer, primaryKey, real, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { criarEstadoInicial, fecharMes, type Decisoes, type GameState, type Parametros, type ResultadoDoMes } from '@govgame/engine'
+import { conferirNumerosDoTurno, type Calibracao } from './calibracao'
 
 const partidas = sqliteTable('games', {
   id: integer('id').primaryKey(),
@@ -41,7 +42,7 @@ export type RepositorioDePartidas = {
 
 export class ConflitoDePartida extends Error {}
 
-export function abrirRepositorio(caminho: string, params: Parametros): RepositorioDePartidas {
+export function abrirRepositorio(caminho: string, params: Parametros, calibracao?: Calibracao): RepositorioDePartidas {
   const sqlite = new Database(caminho)
   sqlite.pragma('journal_mode = WAL')
   sqlite.pragma('foreign_keys = ON')
@@ -67,6 +68,16 @@ export function abrirRepositorio(caminho: string, params: Parametros): Repositor
   const montarPartida = (geracao: number, turno?: typeof turnos.$inferSelect): Partida => turno
     ? { geracao, estado: turno.estado, resultado: { ...turno.resultado, proximoEstado: turno.estado } }
     : { geracao, estado: null }
+
+  // Saves da revisão local 2025.3 têm estado compatível. A base atual vale a partir do próximo fechamento.
+  const estadoParaContinuar = (estado: GameState, atuais = calibracao?.parametros() ?? params): GameState =>
+    !estado.fimDeJogo && (calibracao || (atuais.versao === '2025.2' && estado.versao === '2025.3'))
+      ? { ...estado, versao: atuais.versao }
+      : estado
+  const montarPartidaAtual = (geracao: number, turno?: typeof turnos.$inferSelect): Partida => {
+    const partida = montarPartida(geracao, turno)
+    return partida.estado ? { ...partida, estado: estadoParaContinuar(partida.estado) } : partida
+  }
 
   const dadosTurno = (decisoes: Decisoes, fechamento: ResultadoDoMes) => {
     const { proximoEstado, ...resultado } = fechamento
@@ -106,21 +117,26 @@ export function abrirRepositorio(caminho: string, params: Parametros): Repositor
   if (params.versao === '2025.2') migrarAprovacao.immediate()
 
   const gravar = sqlite.transaction((geracao: number, mesAnterior: number, decisoes: Decisoes): Partida => {
+    const atuais = calibracao?.parametros() ?? params
     if (geracao !== geracaoAtual()) throw new ConflitoDePartida('partidaAlterada')
     const anterior = ultimoTurno()
-    if (anterior && anterior.turno === mesAnterior + 1 && isDeepStrictEqual(anterior.decisoes, decisoes)) {
-      return montarPartida(geracao, anterior)
+    if (anterior && anterior.turno === mesAnterior + 1 && isDeepStrictEqual(anterior.decisoes, decisoes)
+      && (!calibracao || anterior.estado.versao === atuais.versao)) {
+      return montarPartidaAtual(geracao, anterior)
     }
-    const estado = anterior?.estado ?? criarEstadoInicial(params)
+    const estado = anterior ? estadoParaContinuar(anterior.estado, atuais) : criarEstadoInicial(atuais)
     if (estado.mes !== mesAnterior) throw new ConflitoDePartida('mesDesatualizado')
-    if (estado.versao !== params.versao) throw new ConflitoDePartida('versaoIncompativel')
+    if (estado.versao !== atuais.versao) throw new ConflitoDePartida('versaoIncompativel')
     if (estado.fimDeJogo) throw new ConflitoDePartida('mandatoEncerrado')
-    const fechamento = fecharMes(estado, decisoes, params)
+    const fechamento = fecharMes(estado, decisoes, atuais)
+    if (calibracao) conferirNumerosDoTurno(fechamento)
     const { proximoEstado } = fechamento
     if (!anterior) {
       db.insert(partidas).values({
-        id, nome: 'Mandato', versao: params.versao, criadaEm: new Date().toISOString(), status: 'em_andamento',
+        id, nome: 'Mandato', versao: atuais.versao, criadaEm: new Date().toISOString(), status: 'em_andamento',
       }).run()
+    } else if (anterior.estado.versao !== estado.versao) {
+      db.update(partidas).set({ versao: estado.versao }).where(eq(partidas.id, id)).run()
     }
     db.insert(turnos).values({
       partidaId: id,
@@ -142,7 +158,7 @@ export function abrirRepositorio(caminho: string, params: Parametros): Repositor
   })
 
   return {
-    buscar: sqlite.transaction(() => montarPartida(geracaoAtual(), ultimoTurno())),
+    buscar: sqlite.transaction(() => montarPartidaAtual(geracaoAtual(), ultimoTurno())),
     buscarTurno: sqlite.transaction(mes => montarPartida(geracaoAtual(), buscarTurno(mes))),
     gravar: (geracao, mesAnterior, decisoes) => gravar.immediate(geracao, mesAnterior, decisoes),
     apagar: geracao => apagar.immediate(geracao),

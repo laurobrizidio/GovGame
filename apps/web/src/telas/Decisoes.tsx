@@ -1,12 +1,13 @@
 import type { CSSProperties } from 'react'
 import {
-  CLASSES, INSTRUMENTOS, MINISTERIOS, SETORES,
+  CLASSES, INSTRUMENTOS, MINISTERIOS, SETORES, coef,
   type Decisoes, type GameState, type PreviewFiscal,
 } from '@govgame/engine'
-import { Aviso, Barra, Cartao, Dados, SliderAliquota, SliderZonas } from '../componentes/base'
+import { Barra, Cartao, Dados, SliderAliquota, SliderZonas } from '../componentes/base'
+import { usarParametros } from '../store/partida'
 import {
-  aliquotasPorClasse, anualizar, biAssinado, bilhoes, bilhoesPorAno, bilhoesPorMes, carenciaMeses, gastosPorMinisterio, incentivo,
-  irMaximo, lafferLimiar, lafferPiso, num, pct, pp, resumoIncentivos, tomDoSaldo,
+  aliquotasPorClasse, anualizar, biAssinado, bilhoes, bilhoesPorAno, bilhoesPorMes, gastosPorMinisterio, incentivo,
+  num, pct, pp, resumoIncentivos, tomDoSaldo,
 } from '../viewmodels/jogo'
 import { t, textos } from '../viewmodels/textos'
 
@@ -16,7 +17,8 @@ type EditorProps = {
 }
 
 export function Gastos({ estado, decisoes, previa, ajustar }: EditorProps) {
-  const linhas = gastosPorMinisterio(estado, decisoes, previa)
+  const params = usarParametros()
+  const linhas = gastosPorMinisterio(estado, decisoes, previa, params)
   const criticos = linhas.filter(item => item.tom === 'negativo')
   const { fluxo } = previa
 
@@ -78,7 +80,12 @@ export function Gastos({ estado, decisoes, previa, ajustar }: EditorProps) {
 }
 
 export function Receitas({ estado, decisoes, previa, ajustar }: EditorProps) {
-  const { ir, fluxo } = previa
+  const params = usarParametros()
+  const irMaximo = coef(params, 'ir', 'aliquotaMaxima')
+  const lafferLimiar = coef(params, 'ir', 'lafferLimiar')
+  const lafferPiso = coef(params, 'ir', 'lafferPiso') * 100
+  const carenciaMeses = coef(params, 'turno', 'carenciaMeses')
+  const { ir, irAnunciado, fluxo } = previa
   return <div className="coluna">
     <div className="editor-grid">
       <section className="cartao cartao-tabela">
@@ -93,10 +100,11 @@ export function Receitas({ estado, decisoes, previa, ajustar }: EditorProps) {
         <table className="tabela-controles tabela-ir">
           <thead><tr>
             <th scope="col">{t('classeLabel')}</th><th scope="col">{t('aliquota')}</th>
-            <th scope="col" className="alinhar-direita">{t('arrecadacaoClasse')}</th><th scope="col">{t('situacao')}</th>
+            <th scope="col" className="alinhar-direita">{t('arrecadacaoClasse')}<small>{t('aliquotasAnunciadas')}</small></th>
+            <th scope="col">{t('situacao')}</th>
           </tr></thead>
           <tbody>
-            {aliquotasPorClasse(estado, decisoes, previa).map(linha =>
+            {aliquotasPorClasse(estado, decisoes, previa, params).map(linha =>
               <tr key={linha.classe}>
                 <th scope="row">{linha.nome}<small>{linha.descricao}</small><small>{linha.base}</small></th>
                 <td><div className="linha-aliquota">
@@ -106,9 +114,9 @@ export function Receitas({ estado, decisoes, previa, ajustar }: EditorProps) {
                   />
                   <div className="valor-tabela">{pct(linha.valor)}<small>{t('referencia', { valor: pct(linha.referencia) })}</small></div>
                 </div></td>
-                <td className="valor-tabela valor-ir">{bilhoes(ir.arrecadacaoPorClasseBi[linha.classe], 2)}
+                <td className="valor-tabela valor-ir">{linha.arrecadacao}
                   <small>{t('aliquotaProjetadaValor', { valor: pct(linha.projetada) })}</small>
-                  {linha.receitaEstimada && <small>{t('estimada')}</small>}
+                  {linha.arrecadacaoNoMes && <small>{t('arrecadacaoNoNominal', { valor: linha.arrecadacaoNoMes })}</small>}
                 </td><td className={`tom-${linha.tom}`}>{linha.situacao}</td>
               </tr>,
             )}
@@ -119,9 +127,11 @@ export function Receitas({ estado, decisoes, previa, ajustar }: EditorProps) {
       <aside className="coluna">
         <Cartao>
           <p className="rotulo">{t('arrecadacaoIr')}</p>
-          <strong className="numero-grande">{bilhoes(ir.arrecadacaoBi, 2)}</strong>
-          <p className="texto-suave">{t('eficiencia')} · {pct(ir.eficienciaAdministracaoPct)}</p>
-          {ir.eficienciaAdministracaoPct === null && <Aviso>{t('eficienciaPendente')}</Aviso>}
+          <strong className="numero-grande" aria-live="polite">{bilhoesPorAno(irAnunciado.arrecadacaoBi, 2)}</strong>
+          <p className="texto-suave">{t('aliquotasAnunciadas')}</p>
+          {ir.arrecadacaoBi !== irAnunciado.arrecadacaoBi && <p className="texto-suave">
+            {t('arrecadacaoNoNominal', { valor: bilhoesPorAno(ir.arrecadacaoBi, 2) })}
+          </p>}
         </Cartao>
         <Cartao titulo={t('justica')}>
           <p className="texto-suave">{t('justicaDef')}</p>
@@ -160,7 +170,7 @@ export function Receitas({ estado, decisoes, previa, ajustar }: EditorProps) {
             <tr key={setor}>
               <th scope="row">{textos.setores[setor]}</th>
               {INSTRUMENTOS.map(instrumento => {
-                const item = incentivo(estado, decisoes, setor, instrumento, previa)
+                const item = incentivo(estado, decisoes, setor, instrumento, previa, params)
                 const { zonas } = item
                 const style = {
                   '--inicio-integral': `${zonas.inicial}%`, '--inicio-metade': `${zonas.integral}%`, '--inicio-custo': `${zonas.metade}%`,

@@ -89,3 +89,35 @@ it('preenche a aprovação de turnos confirmados sem perder decisões ou encerra
     rmSync(diretorio, { recursive: true, force: true })
   }
 })
+
+it('continua um save da revisão local 2025.3 e preserva os fechamentos arquivados', async () => {
+  const diretorio = mkdtempSync(join(tmpdir(), 'govgame-compatibilidade-'))
+  const caminho = join(diretorio, 'teste.sqlite')
+  const revisaoLocal = { ...parametros2025, versao: '2025.3' }
+  const decisoes = decisoesIniciais(revisaoLocal)
+  decisoes.aliquotasPct.A -= 1
+  const repositorio = abrirRepositorio(caminho, revisaoLocal)
+  const arquivado = repositorio.gravar(0, 0, decisoes)
+  repositorio.fechar()
+
+  const servidor = criarServidor(abrirRepositorio(caminho, parametros2025))
+  try {
+    const leitura = await servidor.inject({ method: 'GET', url: '/api/partida' })
+    const { estado, geracao } = leitura.json<{ estado: ReturnType<typeof criarEstadoInicial>; geracao: number }>()
+    expect(estado).toEqual({ ...arquivado.estado, versao: parametros2025.versao })
+    const previsto = fecharMes(estado, estado.decisoes, parametros2025)
+
+    const resposta = await servidor.inject({
+      method: 'POST', url: '/api/partida/turnos',
+      payload: { geracao, mesAnterior: estado.mes, decisoes: estado.decisoes },
+    })
+    expect(resposta.statusCode).toBe(200)
+    expect(resposta.json().estado.mes).toBe(2)
+    expect(resposta.json().resultado).toEqual(JSON.parse(JSON.stringify(previsto)))
+    const historico = await servidor.inject({ method: 'GET', url: '/api/partida/turnos/1' })
+    expect(historico.json()).toEqual(arquivado)
+  } finally {
+    await servidor.close()
+    rmSync(diretorio, { recursive: true, force: true })
+  }
+})

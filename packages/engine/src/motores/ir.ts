@@ -1,7 +1,13 @@
 import { somar } from '../calculo'
-import type { Decisoes, GameState, Parametros, PorClasse, ResultadoMotor, SaidasIR, Vigencia } from '../estado'
+import type { Classe, Decisoes, GameState, Parametros, PorClasse, ResultadoMotor, SaidasIR, Vigencia } from '../estado'
 import { CLASSES, coef } from '../params'
 import { apurarVigencia } from '../vigencia'
+
+export function calcularArrecadacaoIrClasseBi(classe: Classe, aliquotaPct: number, params: Parametros): number {
+  const excesso = Math.max(0, aliquotaPct - coef(params, 'ir', 'lafferLimiar'))
+  const eficienciaLaffer = Math.max(coef(params, 'ir', 'lafferPiso'), 1 - excesso * coef(params, 'ir', 'lafferPerdaPorPp'))
+  return params.classes[classe].baseTributavelMensalBi * aliquotaPct / 100 * eficienciaLaffer
+}
 
 export function motorIR(estado: GameState, decisoes: Decisoes, params: Parametros): ResultadoMotor<SaidasIR> & {
   carencia: Partial<PorClasse<Vigencia>>
@@ -23,9 +29,7 @@ export function motorIR(estado: GameState, decisoes: Decisoes, params: Parametro
     )
     aliquotas[classe] = vigente
     if (fila) carencia[classe] = fila
-    const excesso = Math.max(0, vigente - coef(params, 'ir', 'lafferLimiar'))
-    const eficienciaLaffer = Math.max(coef(params, 'ir', 'lafferPiso'), 1 - excesso * coef(params, 'ir', 'lafferPerdaPorPp'))
-    arrecadacaoPorClasseBi[classe] = dados.baseTributavelMensalBi * vigente / 100 * eficienciaLaffer
+    arrecadacaoPorClasseBi[classe] = calcularArrecadacaoIrClasseBi(classe, vigente, params)
     const baseConsumo = dados.baseTributavelMensalBi * dados.propensaoConsumo / 100
     consumoBi += (dados.aliquotaInicialPct - vigente) * baseConsumo
     consumoAnteriorBi += (dados.aliquotaInicialPct - vigenteAnterior) * baseConsumo
@@ -33,8 +37,6 @@ export function motorIR(estado: GameState, decisoes: Decisoes, params: Parametro
     efeitoPorClasse[classe] = (dados.aliquotaInicialPct - anunciada) * coef(params, 'ir', chaveSensibilidade) / 100
   }
 
-  const notaAdmin = estado.fiscal.servicos.administracao.nota
-  const eficienciaAdministracaoPct = notaAdmin === coef(params, 'orcamento', 'notaServicoInicial') ? 100 : null
   const impulsoPibPct = (consumoBi - consumoAnteriorBi) * coef(params, 'ir', 'consumoPib')
   const impulsoIpcaPct = Math.max(0, consumoBi) * coef(params, 'ir', 'consumoIpca')
   const progressividadePp = decisoes.aliquotasPct.A - somar([decisoes.aliquotasPct.D, decisoes.aliquotasPct.E]) / 2
@@ -48,7 +50,6 @@ export function motorIR(estado: GameState, decisoes: Decisoes, params: Parametro
     saidas: {
       arrecadacaoBi: somar(Object.values(arrecadacaoPorClasseBi)),
       arrecadacaoPorClasseBi,
-      eficienciaAdministracaoPct,
       aliquotasVigentesPct: aliquotas,
       consumoBi,
       impulsoPibPct,
@@ -63,10 +64,7 @@ export function motorIR(estado: GameState, decisoes: Decisoes, params: Parametro
     popularidade: penalidadeInjustica < 0
       ? [{ origem: 'ir', delta: penalidadeInjustica, rotulo: 'injusticaTributaria' }]
       : [],
-    avisos: [
-      ...CLASSES.filter(classe => carencia[classe] !== undefined)
-        .map(classe => ({ codigo: 'carenciaIr', params: { classe, mes: carencia[classe]!.mes } })),
-      ...(eficienciaAdministracaoPct === null ? [{ codigo: 'eficienciaAdministracaoPendente', params: { nota: notaAdmin } }] : []),
-    ],
+    avisos: CLASSES.filter(classe => carencia[classe] !== undefined)
+      .map(classe => ({ codigo: 'carenciaIr', params: { classe, mes: carencia[classe]!.mes } })),
   }
 }

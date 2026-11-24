@@ -1,7 +1,8 @@
-import { ArrowDown, ArrowRight, ArrowUp, BarChart3, ChartNoAxesCombined, Landmark, LayoutDashboard, ReceiptText, UsersRound } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUp, BarChart3, ChartNoAxesCombined, Landmark, LayoutDashboard, ReceiptText, SlidersHorizontal, UsersRound } from 'lucide-react'
 import type { GameState, PreviewFiscal, ResultadoDoMes } from '@govgame/engine'
+import { usarParametros } from '../store/partida'
 import {
-  abas, anosMandato, biAssinado, deltaHud, duracaoMandato, kpis, mesesAno, type Aba,
+  abas, anosMandato, anualizar, biAssinado, deltaHud, duracaoMandato, kpis, mesesAno, type Aba,
 } from '../viewmodels/jogo'
 import { t, textos } from '../viewmodels/textos'
 
@@ -10,15 +11,15 @@ const icones = {
   tesouro: Landmark, economia: ChartNoAxesCombined, povo: UsersRound,
 }
 
-export function TopBar({ estado, previa, aba, bloqueado, fecharBloqueado, navegar, preparar }: {
-  estado: GameState; previa: PreviewFiscal; aba: Aba; bloqueado: boolean; fecharBloqueado: boolean;
-  navegar: (aba: Aba) => void; preparar: () => void
+export function TopBar({ estado, previa, aba, bloqueado, fecharBloqueado, calibracao, navegar, preparar }: {
+  estado: GameState; previa: PreviewFiscal; aba: Aba | 'calibracao'; bloqueado: boolean; fecharBloqueado: boolean;
+  calibracao: boolean; navegar: (aba: Aba | 'calibracao') => void; preparar: () => void
 }) {
   const mes = Math.min(estado.mes + 1, duracaoMandato)
   const ano = Math.ceil(mes / mesesAno)
   return <div className="barra-topo">
     <button type="button" className="marca" disabled={bloqueado} onClick={() => navegar('painel')}>
-      <strong>{t('marca')}</strong><small>{t('assinatura')}</small>
+      <strong>{t('marca')}</strong><small>{t(calibracao ? 'calibracaoAmbiente' : 'assinatura')}</small>
     </button>
     <nav aria-label={t('navegacao')} className="abas">
       {abas.map(id => {
@@ -27,6 +28,9 @@ export function TopBar({ estado, previa, aba, bloqueado, fecharBloqueado, navega
           disabled={bloqueado} onClick={() => navegar(id)}
         ><Icone size={15} aria-hidden="true" />{textos.abas[id]}</button>
       })}
+      {calibracao && <button type="button" aria-current={aba === 'calibracao' ? 'page' : undefined}
+        disabled={bloqueado} onClick={() => navegar('calibracao')}
+      ><SlidersHorizontal size={15} aria-hidden="true" />{t('calibracao')}</button>}
     </nav>
     <div className="mandato">
       <span><strong>{t('mesDe', { mes, total: duracaoMandato })}</strong>{t('anoDe', { ano, total: anosMandato })}</span>
@@ -39,7 +43,7 @@ export function TopBar({ estado, previa, aba, bloqueado, fecharBloqueado, navega
     <div className="projecao-topo" aria-live="polite">
       <span>{t(previa.fluxo.estimado ? 'projecaoEstimada' : 'projecao')}</span>
       <strong className={previa.fluxo.resultadoNominalBi < 0 ? 'saldo-topo' : undefined}>
-        {t('nominalCurto', { valor: biAssinado(previa.fluxo.resultadoNominalBi) })}
+        {t('nominalCurto', { valor: biAssinado(anualizar(previa.fluxo.resultadoNominalBi)) })}
       </strong>
     </div>
     <button className="botao botao-ambar" type="button" disabled={fecharBloqueado} onClick={preparar}>
@@ -51,8 +55,9 @@ export function TopBar({ estado, previa, aba, bloqueado, fecharBloqueado, navega
 export function Hud({ estado, resultado, bloqueado, navegar }: {
   estado: GameState; resultado: ResultadoDoMes | null; bloqueado: boolean; navegar: (aba: Aba) => void
 }) {
+  const params = usarParametros()
   return <nav className="hud" aria-label={t('indicadores')}>
-    {kpis(estado).map(kpi => {
+    {kpis(estado, params).map(kpi => {
       const delta = deltaHud(resultado, kpi.id)
       const Variacao = delta?.sobe ? ArrowUp : ArrowDown
       return <button key={kpi.id} type="button" className="hud-item" disabled={bloqueado} onClick={() => navegar(kpi.aba)}>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import type { GameState, RegistroMes, ResultadoDoMes } from '@govgame/engine'
+import { coef, type GameState, type RegistroMes, type ResultadoDoMes } from '@govgame/engine'
 import { Aviso, BarrasHistorico, Cartao, Manchete } from '../componentes/base'
-import { compararKpis, duracaoMandato, limiarImpeachment, num, pct, resumoMotor } from '../viewmodels/jogo'
+import { usarParametros } from '../store/partida'
+import { compararKpis, duracaoMandato, num, pct, resumoMotor } from '../viewmodels/jogo'
 import { t, textos, traduzirMensagem } from '../viewmodels/textos'
 
 export function RelatorioMes({ anterior, resultado }: { anterior: RegistroMes; resultado: ResultadoDoMes }) {
@@ -67,6 +68,7 @@ export function Fechamento({ anterior, resultado, ocupado, rever, confirmar }: {
 export function FimDeJogo({ estado, ocupado, reiniciar, abrirHistorico }: {
   estado: GameState; ocupado: boolean; reiniciar: () => Promise<void>; abrirHistorico: () => void;
 }) {
+  const limiarImpeachment = coef(usarParametros(), 'turno', 'aprovacaoImpeachment')
   const [confirmando, setConfirmando] = useState(false)
   const fim = estado.fimDeJogo
   if (!fim) return null

@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GovGame · Sensibilidade dos coeficientes</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #15211c; background: #f1eee6; font-variant-numeric: tabular-nums; }
+    body { margin: 0; }
+    header { background: #15211c; color: #fbfaf6; padding: 22px max(20px, calc((100vw - 1200px) / 2)); }
+    header strong { font-size: 1.25rem; }
+    main { max-width: 1240px; margin: auto; padding: 26px 20px; }
+    h1, h2, p { margin: 0; }
+    h1 { font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spacing: -.025em; margin-bottom: 4px; }
+    h2 { font-size: 1.25rem; }
+    small, .nota { color: #56615b; }
+    .nota { font-size: .9rem; line-height: 1.5; }
+    section, details { background: #fbfaf6; border: 1px solid #d9d4c7; border-radius: 14px; padding: 18px; margin-top: 16px; }
+    .controles { display: grid; grid-template-columns: 1fr 1.7fr 1fr; gap: 14px; }
+    label { display: grid; gap: 5px; font-weight: 600; }
+    select { width: 100%; min-height: 42px; font: inherit; background: #fbfaf6; color: #15211c; border: 1px solid #9ca39b; border-radius: 8px; padding: 6px 8px; }
+    .mecanismo { display: grid; gap: 7px; margin-top: 15px; padding-top: 14px; border-top: 1px solid #e4e0d3; }
+    .mecanismo p { max-width: 84ch; line-height: 1.5; }
+    .grafico-cabecalho { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 12px 26px; margin-bottom: 14px; }
+    .grafico-cabecalho label { min-width: min(100%, 270px); }
+    canvas { display: block; width: 100%; height: 300px; }
+    .legenda { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-block: 4px 12px; list-style: none; padding: 0; }
+    .legenda li { display: flex; align-items: center; gap: 7px; }
+    .marca { display: inline-block; width: 22px; border-top: 3px solid var(--serie); }
+    .condicoes { margin: 8px 0; padding-left: 18px; }
+    .alerta { border-left: 3px solid #c9961a; padding: 7px 10px; background: #fff6de; color: #5a4200; margin-top: 6px; line-height: 1.45; }
+    .mes { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+    .mes input { flex: 1; accent-color: #0e5a3c; }
+    .valores { display: flex; flex-wrap: wrap; gap: 5px 18px; margin-top: 6px; }
+    .efeitos { max-width: 100%; overflow-x: auto; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid #e4e0d3; }
+    thead { background: #f4f2ea; }
+    tbody tr[data-ativo="true"] { background: #dcebe2; }
+    tbody button { padding: 0; border: 0; background: transparent; color: #0a4a30; font: inherit; text-align: left; text-decoration: underline; cursor: pointer; }
+    summary { font-weight: 600; cursor: pointer; }
+    details p { margin-top: 8px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 680px) { .controles { grid-template-columns: 1fr; } canvas { height: 230px; } }
+  </style>
+</head>
+<body>
+<header><strong>GovGame</strong></header>
+<main>
+  <h1>Sensibilidade dos coeficientes</h1>
+  <p id="cobertura" class="nota"></p>
+  <section aria-label="Coeficiente em análise">
+    <div class="controles">
+      <label>Motor<select id="motor"></select></label>
+      <label>Coeficiente<select id="coeficiente"></select></label>
+      <label>Estratégia<select id="estrategia">
+        <option value="passivo">Passiva</option>
+        <option value="austeridade">Austeridade</option>
+        <option value="populista">Populista</option>
+        <option value="teste">Estresse e recuperação</option>
+      </select></label>
+    </div>
+    <div class="mecanismo">
+      <h2 id="chave"></h2>
+      <p id="descricao"></p>
+      <small id="fonte"></small>
+      <div id="restricoes"></div>
+    </div>
+  </section>
+  <section aria-label="Trajetória simulada">
+    <div class="grafico-cabecalho">
+      <h2 id="titulo-grafico">Trajetória mensal</h2>
+      <label>Indicador<select id="indicador"></select></label>
+    </div>
+    <ul class="legenda" id="legenda"></ul>
+    <canvas id="grafico" role="img" aria-label="Gráfico de trajetórias mensais. Os valores podem ser lidos no controle Mês."></canvas>
+    <p id="sem-serie" class="nota" hidden>Indicador indisponível nas trajetórias selecionadas.</p>
+    <div class="mes"><label for="mes">Mês <output id="numero-mes"></output></label><input type="range" min="0" id="mes"></div>
+    <div id="valores" class="valores" aria-live="polite"></div>
+  </section>
+  <section aria-label="Resumo dos efeitos">
+    <div class="grafico-cabecalho">
+      <div><h2>Diferenças frente à base</h2><p class="nota" id="resultado"></p></div>
+      <label>Cenário da comparação<select id="cenario"></select></label>
+    </div>
+    <p id="regime" class="nota"></p>
+    <p id="sem-comparacao" class="nota" hidden>Sem cenário numérico válido para comparação.</p>
+    <div class="efeitos" id="efeitos">
+      <table>
+        <thead><tr><th scope="col">Indicador</th><th scope="col">Último mês comum</th><th scope="col">Maior diferença</th><th scope="col">1ª alteração</th></tr></thead>
+        <tbody id="diferencas"></tbody>
+      </table>
+    </div>
+  </section>
+  <details>
+    <summary>Como a varredura foi rodada</summary>
+    <p class="nota">A base e cada variante começam no mês zero. Os testes usam 80% e 120% do valor original. Para o efeito do emprego sobre o consumo, são usados os limites da faixa de calibração. Para parâmetros inteiros, o passo é arredondado e tem pelo menos uma unidade. Na varredura completa, um valor zero usa passo exploratório de 1 e o multiplicador pendente do subsídio direto é testado no limite documentado de 0,14.</p>
+    <p class="nota">As variantes recompõem pesos que precisam somar 1 e ampliam as janelas quando forem necessárias para manter uma defasagem válida. O painel mostra os ajustes em conjunto e as variantes rejeitadas pela validação.</p>
+    <p class="nota">Cada estratégia segue a mesma regra de decisão em todas as variantes. Os bots que usam um teto, um limiar ou os valores iniciais podem mudar a decisão quando essas referências mudam. O cenário de estresse alterna seis meses de cortes e seis de recomposição por ciclo, reduz e expande incentivos, testa IR alto na classe A e tenta amortizar a dívida no início.</p>
+    <p class="nota">Diferenças comparam o mesmo mês. A maior diferença mantém seu sinal e indica o mês em que ocorreu. Para taxas em %, os deltas estão em pontos percentuais. Encerramento e pontuação usam o mês final de cada cenário. Um resultado nulo indica um canal indisponível. Uma diferença zero indica que o cenário selecionado não ativou o mecanismo ou que o resultado ficou abaixo da precisão exibida.</p>
+  </details>
+</main>
+<script id="dados" type="application/json">/* DADOS_SIMULADOS */</script>
+<script>
+  const dados = JSON.parse(document.getElementById('dados').textContent)
+  const $ = id => document.getElementById(id)
+  const motor = $('motor'), coeficiente = $('coeficiente'), indicador = $('indicador'), cenario = $('cenario')
+  const grafico = $('grafico'), mes = $('mes')
+  const cores = ['#15211c', '#0e5a3c', '#b8322a']
+  const motores = { turno: 'Turno', ir: 'Imposto de Renda', orcamento: 'Orçamento', subsidios: 'Subsídios', bc: 'Banco Central', macro: 'Macroeconomia', social: 'Social' }
+  const status = { confirmado: 'Confirmado', a_confirmar: 'A confirmar', pendente: 'Pendente' }
+  const finais = { mandato: 'Fim do mandato', impeachment: 'Impeachment', calote: 'Calote', hiperinflacao: 'Hiperinflação' }
+  const regimes = { deflacao: 'Deflação', desinflacao: 'Desinflação', controlada: 'Controlada', acimaMeta: 'Acima da meta', galopante: 'Galopante', superinflacao: 'Superinflação', hiperinflacao: 'Hiperinflação' }
+  const fmt = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 6 })
+  const fmtGrafico = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 3 })
+  const num = valor => valor == null ? '—' : fmt.format(valor)
+  const comUnidade = (valor, unidade) => valor == null ? '—' : num(valor) + (unidade ? ' ' + unidade : '')
+  const opcao = (valor, titulo) => new Option(titulo, valor)
+  const elemento = (tag, texto) => Object.assign(document.createElement(tag), { textContent: texto })
+  const selecionado = () => dados.coeficientes[Number(coeficiente.value)]
+  const estrategia = () => $('estrategia').value
+  const informacao = () => dados.indicadores[Number(indicador.value)]
+
+  const totais = dados.coeficientes.flatMap(item => item.variantes)
+  const validos = totais.filter(item => item.partidas).length
+  const partidas = (validos + 1) * Object.keys(dados.referencia).length
+  $('cobertura').textContent = dados.coeficientes.length + ' coeficientes · ' + partidas + ' partidas simuladas · Base ' + dados.versao
+  motor.replaceChildren(...Object.entries(motores)
+    .filter(([id]) => dados.coeficientes.some(item => item.motor === id))
+    .map(([id, titulo]) => opcao(id, titulo)))
+  indicador.replaceChildren(...dados.indicadores.map(({ nome }, i) => opcao(i, nome)))
+  motor.value = 'orcamento'
+
+  function listarCoeficientes() {
+    coeficiente.replaceChildren(...dados.coeficientes.flatMap((item, i) => item.motor === motor.value ? [opcao(i, item.nome)] : []))
+  }
+
+  function linhas() {
+    const item = selecionado()
+    const valores = [{ nome: 'Base · ' + (item.valor === null ? 'Pendente' : num(item.valor)), serie: dados.referencia[estrategia()], cor: cores[0] }]
+    item.variantes.forEach((variante, i) => {
+      if (variante.partidas) valores.push({
+        nome: (item.faixa ? (i === 0 ? 'Baixo' : 'Alto') : item.valor === null ? 'Ativação' : item.valor === 0 ? (i === 0 ? '−1' : '+1') : i === 0 ? '−20%' : '+20%') + ' · ' + num(variante.valor),
+        serie: variante.partidas[estrategia()], cor: cores[i + 1], traco: i === 0 ? [7, 4] : [2, 4], i,
+      })
+    })
+    return valores
+  }
+
+  function explicarErro(texto) {
+    try { return JSON.parse(texto).map(item => item.message).join(' · ') }
+    catch { return texto }
+  }
+
+  function mostrarCoeficiente(trocarIndicador = true) {
+    const item = selecionado()
+    $('chave').textContent = item.nome
+    $('descricao').textContent = item.mecanismo
+    $('fonte').textContent = item.motor + '.' + item.chave + ' · ' + item.fonte + ' · ' + status[item.status]
+    const restricoes = $('restricoes')
+    restricoes.replaceChildren()
+    if (!item.variantes.length) {
+      const mensagem = elemento('p', 'O valor de referência está pendente. Este canal ainda não entra no cálculo.')
+      mensagem.className = 'alerta'
+      restricoes.append(mensagem)
+    }
+    for (const variante of item.variantes) {
+      const ajustes = variante.mudancas.slice(1).map(m => m.id + ' = ' + num(m.valor))
+      if (variante.erro || ajustes.length) {
+        const mensagem = elemento('p', 'Valor ' + num(variante.valor) + ' · ' + (variante.erro
+          ? explicarErro(variante.erro)
+          : 'Ajuste associado · ' + ajustes.join(' · ')))
+        mensagem.className = variante.erro ? 'alerta' : 'nota'
+        restricoes.append(mensagem)
+      }
+    }
+    const series = linhas()
+    cenario.replaceChildren(...series.slice(1).map(linha => opcao(linha.i, linha.nome)))
+    cenario.disabled = series.length < 2
+    if (series.length > 1) cenario.value = String(series.at(-1).i)
+    if (trocarIndicador) {
+      const prioridades = {
+        mandatoMeses: 'aprovacao', custoDividaFracaoSelic: 'juros', receitasOutrasBi: 'primario',
+        caixaMinimoBi: 'amortizacao', fugaPorPp: 'dolar', lafferLimiar: 'ir', lafferPerdaPorPp: 'ir',
+        miseraAprovacao: 'aprovacao', okun: 'desemprego', multiplicadorSubsidio: 'pibMes',
+        ipcaDesempregoPpAnualPorPp: 'efeitoIpcaDesemprego',
+        consumoEmpregoPctPibAnualPorPp: 'consumoEmprego',
+      }
+      const preferido = prioridades[item.chave] || { turno: 'aprovacao', ir: 'ir', orcamento: 'divida', subsidios: 'pibMes', bc: 'selic', macro: 'pibMes', social: 'satisfacao' }[item.motor]
+      const comEfeito = dados.indicadores.map((_, i) => i).filter(i => series.slice(1)
+        .some(linha => diferenca(series[0].serie.series[i], linha.serie.series[i]).primeira != null))
+      const preferidoIdx = dados.indicadores.findIndex(m => m.id === preferido)
+      indicador.value = String(comEfeito.includes(preferidoIdx) || !comEfeito.length ? preferidoIdx : comEfeito[0])
+    }
+    mes.max = String(Math.max(...series.map(linha => linha.serie.mes)))
+    mes.value = mes.max
+    atualizar()
+  }
+
+  function diferenca(base, variante) {
+    const comum = Math.min(base.length, variante.length) - 1
+    let maior = null, pico = null, primeira = null, ultimo = null
+    for (let m = 0; m <= comum; m++) {
+      if (base[m] == null || variante[m] == null) continue
+      const delta = Number((variante[m] - base[m]).toFixed(6))
+      if (m === comum) ultimo = delta
+      if (delta !== 0 && primeira === null) primeira = m
+      if (maior === null || Math.abs(delta) > Math.abs(maior)) { maior = delta; pico = m }
+    }
+    return { comum, maior, pico, primeira, ultimo }
+  }
+
+  function desenhar() {
+    const series = linhas()
+    const i = Number(indicador.value)
+    const pontos = series.flatMap(linha => linha.serie.series[i]).filter(valor => valor != null)
+    grafico.hidden = pontos.length === 0
+    $('sem-serie').hidden = pontos.length > 0
+    $('titulo-grafico').textContent = informacao().nome
+    if (!pontos.length) return
+
+    const { width, height } = grafico.getBoundingClientRect()
+    if (!width || !height) return
+    const dpr = window.devicePixelRatio || 1
+    grafico.width = Math.round(width * dpr)
+    grafico.height = Math.round(height * dpr)
+    const ctx = grafico.getContext('2d')
+    ctx.scale(dpr, dpr)
+    ctx.font = '12px system-ui'
+    const min = Math.min(...pontos), max = Math.max(...pontos)
+    const amplitude = (max - min) || (Math.abs(max) * 0.06 || 1)
+    const minimo = min - amplitude * .08, maximo = max + amplitude * .08
+    const esquerda = 72, topo = 17, direita = width - 13, rodape = height - 29
+    const ultimo = Number(mes.max) || 1
+    const x = m => esquerda + m * (direita - esquerda) / ultimo
+    const y = v => rodape - (v - minimo) * (rodape - topo) / (maximo - minimo)
+
+    ctx.fillStyle = '#56615b'
+    ctx.textBaseline = 'middle'
+    ctx.textAlign = 'right'
+    for (let j = 0; j <= 4; j++) {
+      const v = minimo + (maximo - minimo) * j / 4
+      ctx.strokeStyle = '#e4e0d3'
+      ctx.beginPath(); ctx.moveTo(esquerda, y(v)); ctx.lineTo(direita, y(v)); ctx.stroke()
+      ctx.fillText(fmtGrafico.format(v), esquerda - 8, y(v))
+    }
+    ctx.textAlign = 'center'
+    const intervalo = ultimo > 36 ? 12 : ultimo > 15 ? 6 : ultimo > 5 ? 3 : 1
+    const marcas = new Set([0, ...Array.from({ length: Math.floor(ultimo / intervalo) }, (_, j) => (j + 1) * intervalo).filter(m => ultimo - m > intervalo / 2), ultimo])
+    for (const m of marcas) ctx.fillText(String(m), x(m), rodape + 16)
+    const leitura = Number(mes.value)
+    ctx.strokeStyle = '#9ca39b'
+    ctx.beginPath(); ctx.moveTo(x(leitura), topo); ctx.lineTo(x(leitura), rodape); ctx.stroke()
+    for (const linha of series) {
+      ctx.beginPath()
+      ctx.strokeStyle = linha.cor
+      ctx.lineWidth = 2
+      ctx.setLineDash(linha.traco || [])
+      let conectado = false
+      linha.serie.series[i].forEach((v, m) => {
+        if (v == null) { conectado = false; return }
+        if (conectado) ctx.lineTo(x(m), y(v))
+        else ctx.moveTo(x(m), y(v))
+        conectado = true
+      })
+      ctx.stroke()
+      const selecionado = linha.serie.series[i][leitura]
+      if (selecionado != null) {
+        ctx.fillStyle = linha.cor
+        ctx.beginPath(); ctx.arc(x(leitura), y(selecionado), 3.5, 0, 2 * Math.PI); ctx.fill()
+      }
+    }
+  }
+
+  function atualizarMes() {
+    $('numero-mes').textContent = mes.value
+    const unidade = informacao().unidade
+    const series = linhas()
+    $('valores').replaceChildren(...series.map(linha =>
+      elemento('span', linha.nome + ' · ' + comUnidade(linha.serie.series[Number(indicador.value)][Number(mes.value)], unidade)),
+    ))
+    desenhar()
+  }
+
+  function atualizar() {
+    const series = linhas()
+    $('legenda').replaceChildren(...series.map(linha => {
+      const item = document.createElement('li')
+      const marca = elemento('span', '')
+      marca.className = 'marca'
+      marca.style.setProperty('--serie', linha.cor)
+      if (linha.traco) marca.style.borderTopStyle = linha.i === 0 ? 'dashed' : 'dotted'
+      item.append(marca, linha.nome)
+      return item
+    }))
+    const base = series[0].serie
+    $('resultado').textContent = series.map(({ nome, serie }) =>
+      nome + ' · ' + finais[serie.final] + ', mês ' + serie.mes + ', nota ' + num(serie.nota),
+    ).join(' | ')
+    const caso = series.find(linha => linha.i != null && String(linha.i) === cenario.value)
+    $('efeitos').hidden = !caso
+    $('sem-comparacao').hidden = !!caso
+    const regimeMudou = caso?.serie.regimes.findIndex((regime, m) => base.regimes[m] != null && regime !== base.regimes[m]) ?? -1
+    $('regime').textContent = regimeMudou < 0 ? '' : 'Regime de inflação no mês ' + regimeMudou
+      + ' · ' + regimes[base.regimes[regimeMudou]] + ' → ' + regimes[caso.serie.regimes[regimeMudou]]
+    if (caso) {
+      const linhas = dados.indicadores.map((info, i) => ({ info, i, ...diferenca(base.series[i], caso.serie.series[i]) }))
+      linhas.sort((a, b) => (a.primeira ?? Infinity) - (b.primeira ?? Infinity))
+      $('diferencas').replaceChildren(...linhas.map(({ info, i, comum, maior, pico, primeira, ultimo }) => {
+        const tr = document.createElement('tr')
+        tr.dataset.ativo = String(i) === indicador.value
+        const th = document.createElement('th')
+        th.scope = 'row'
+        const acao = elemento('button', info.nome)
+        acao.type = 'button'
+        acao.addEventListener('click', () => { indicador.value = String(i); atualizar(); indicador.focus() })
+        th.append(acao)
+        const unidade = info.unidade === '%' ? 'p.p.' : info.unidade
+        const delta = valor => (valor > 0 ? '+' : '') + comUnidade(valor, unidade)
+        tr.append(th,
+          elemento('td', ultimo == null ? '—' : delta(ultimo) + ' · M' + comum),
+          elemento('td', maior == null ? '—' : maior === 0 ? delta(maior) : delta(maior) + ' · M' + pico),
+          elemento('td', primeira == null ? '—' : 'M' + primeira),
+        )
+        return tr
+      }))
+    }
+    atualizarMes()
+  }
+
+  motor.addEventListener('change', () => { listarCoeficientes(); mostrarCoeficiente() })
+  coeficiente.addEventListener('change', () => mostrarCoeficiente())
+  $('estrategia').addEventListener('change', () => mostrarCoeficiente(false))
+  indicador.addEventListener('change', atualizar)
+  cenario.addEventListener('change', atualizar)
+  mes.addEventListener('input', atualizarMes)
+  new ResizeObserver(desenhar).observe(grafico)
+  listarCoeficientes()
+  coeficiente.value = String(dados.coeficientes.findIndex(item => item.chave === 'custoDividaFracaoSelic'))
+  mostrarCoeficiente()
+</script>
+</body>
+</html>

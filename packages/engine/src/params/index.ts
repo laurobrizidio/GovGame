@@ -14,12 +14,12 @@ export const INSTRUMENTOS = instrumentoSchema.options
 
 const chaves = {
   turno: ['mandatoMeses', 'anoMeses', 'carenciaMeses', 'historicoMensal', 'historicoIncentivos', 'aprovacaoImpeachment', 'mesesImpeachment', 'mesesCalote', 'mesesHiperinflacao', 'ipcaHiperinflacaoMensal', 'notaAprovacaoPeso', 'notaAprovacaoPior', 'notaAprovacaoMelhor', 'notaDividaPeso', 'notaDividaPior', 'notaDividaMelhor', 'notaQualidadePeso', 'notaQualidadePior', 'notaQualidadeMelhor', 'notaPibPeso', 'notaPibPior', 'notaPibMelhor', 'notaIpcaPeso', 'notaIpcaPior', 'notaIpcaMelhor', 'notaDesempregoPeso', 'notaDesempregoPior', 'notaDesempregoMelhor'],
-  ir: ['lafferLimiar', 'lafferPerdaPorPp', 'lafferPiso', 'consumoPib', 'consumoIpca', 'fugaPorPp', 'sensibilidadeBase', 'sensibilidadeDemais', 'injusticaPorPp', 'eficienciaMinima', 'aliquotaMaxima'],
+  ir: ['lafferLimiar', 'lafferPerdaPorPp', 'lafferPiso', 'consumoPib', 'consumoIpca', 'fugaPorPp', 'sensibilidadeBase', 'sensibilidadeDemais', 'injusticaPorPp', 'aliquotaMaxima'],
   orcamento: ['riscoFaixaBaixa', 'riscoFaixaAlta', 'riscoMaximo', 'premioFaixaAlta', 'premioMaximo', 'pesoPrimario', 'pesoDivida', 'pesoJuros', 'caixaMinimoBi', 'riscoInicioCrise', 'riscoFimCrise', 'vencimentosBi', 'crisePopularidade', 'notaServicoInicial', 'degradacaoInicial', 'degradacaoMaxima', 'recuperacao', 'qualidadePopularidade', 'limiteSlider', 'receitasOutrasBi', 'custoDividaFracaoSelic', 'infraestruturaIpca', 'saudeEducacaoPib'],
   subsidios: ['retornoIntegral', 'retornoMetade', 'taxaRetornoMetade', 'multiplicadorRenuncia', 'multiplicadorSubsidio', 'defasagemPib', 'agroIpca', 'energiaIpca', 'custoPoliticoRenuncia'],
-  bc: ['reuniaoIntervalo', 'passoSelic', 'movimentoMaximo', 'fracaoMovimento', 'selicMinima', 'selicMaxima', 'alvoIpca', 'alvoPib', 'alvoPremio', 'selicDefasagemCredito', 'creditoSelic', 'creditoPib', 'creditoInadimplencia', 'inadimplenciaMediaSelic', 'inadimplenciaSelic', 'inadimplenciaDesemprego', 'inadimplenciaAproximacao', 'inadimplenciaAperto', 'creditoEmAperto', 'altaDolarIntervencaoPct', 'vendaReservasPorPpUsdBi', 'fracaoMaxVendaReservas', 'rendimentoReservas', 'reservasLimiarUsdBi', 'premioReservas', 'impulsoCreditoPib', 'pixAnualBi', 'pixTransacoesBi', 'cartoesAnualBi', 'cartoesTransacoesBi', 'compulsorioVistaPct'],
+  bc: ['reuniaoIntervalo', 'passoSelic', 'movimentoMaximo', 'fracaoMovimento', 'selicMinima', 'selicMaxima', 'selicNeutraAa', 'alvoIpca', 'alvoPib', 'metaDesempregoPct', 'metaDesempregoToleranciaPct', 'metaPibToleranciaPct', 'tendenciaIpcaLimiarPp', 'tendenciaIpcaPeso', 'tendenciaDesempregoLimiarPp', 'selicDefasagemCredito', 'creditoSelic', 'creditoPib', 'creditoInadimplencia', 'inadimplenciaMediaSelic', 'inadimplenciaSelic', 'inadimplenciaDesemprego', 'inadimplenciaAproximacao', 'inadimplenciaAperto', 'creditoEmAperto', 'altaDolarIntervencaoPct', 'vendaReservasPorPpUsdBi', 'fracaoMaxVendaReservas', 'rendimentoReservas', 'reservasLimiarUsdBi', 'premioReservas', 'impulsoCreditoPib', 'pixAnualBi', 'pixTransacoesBi', 'cartoesAnualBi', 'cartoesTransacoesBi', 'compulsorioVistaPct'],
   macro: ['pibMensalBase', 'pibPotencial', 'pibMensalReferenciaBi', 'selicMediaMeses', 'selicFreio', 'ipcaInercia', 'ipcaMetaPeso', 'ipcaMetaMensal', 'ipcaMetaAnual', 'ipcaControladaLimite', 'ipcaGalopanteLimiar', 'ipcaSuperinflacaoLimiar', 'ipcaHistoricoAproximado', 'ipcaDemanda', 'ipcaDolar', 'dolarPremio', 'dolarFuga', 'dolarSelic', 'dolarIpca', 'dolarAproximacao', 'gastoMultiplicador', 'gastoDefasagem', 'dolarPib', 'dolarPibDefasagem'],
-  social: ['inerciaAprovacao', 'miseraAprovacao', 'apertoIpcaInicio', 'apertoIpcaFim', 'apertoDesempregoInicio', 'apertoDesempregoFim', 'miseraIr', 'miseraInadimplencia', 'miseraProtecao', 'miseraSaude', 'okun', 'desempregoPiso', 'satisfacaoInicial', 'satisfacaoMultiplicador', 'inerciaSegmentos', 'unidadeSelic', 'unidadeDolar', 'unidadeGasto', 'unidadeRisco', 'unidadeDivida', 'unidadeFuga', 'pressaoEntrada', 'pressaoSaida', 'pressaoTeto', 'pressaoCusto'],
+  social: ['inerciaAprovacao', 'miseraAprovacao', 'apertoIpcaInicio', 'apertoIpcaFim', 'apertoDesempregoInicio', 'apertoDesempregoFim', 'miseraIr', 'miseraInadimplencia', 'miseraProtecao', 'miseraSaude', 'okun', 'desempregoLimitePct', 'desempregoTetoPct', 'ipcaDesempregoReferenciaPct', 'ipcaDesempregoPpAnualPorPp', 'consumoEmpregoAltaNoLimitePct', 'consumoEmpregoInicioAceleracaoPct', 'consumoEmpregoPctPibAnualPorPp', 'satisfacaoInicial', 'satisfacaoMultiplicador', 'inerciaSegmentos', 'unidadeSelic', 'unidadeDolar', 'unidadeGasto', 'unidadeRisco', 'unidadeDivida', 'unidadeFuga', 'pressaoEntrada', 'pressaoSaida', 'pressaoTeto', 'pressaoCusto'],
 } as const
 type Motor = keyof typeof chaves
 type Chave<M extends Motor> = typeof chaves[M][number]
@@ -41,7 +41,7 @@ const divisoresPositivos = new Set([
   'social.unidadeDivida', 'social.unidadeFuga',
 ])
 const fracoes = new Set([
-  'ir.lafferPiso', 'ir.eficienciaMinima',
+  'ir.lafferPiso',
   'orcamento.pesoPrimario', 'orcamento.pesoDivida', 'orcamento.pesoJuros',
   'subsidios.taxaRetornoMetade', 'bc.fracaoMovimento', 'bc.inadimplenciaAproximacao',
   'bc.creditoEmAperto', 'bc.fracaoMaxVendaReservas', 'macro.ipcaInercia', 'macro.ipcaMetaPeso',
@@ -51,7 +51,31 @@ const componentesNota = {
   Aprovacao: 1, Divida: -1, Qualidade: 1, Pib: 1, Ipca: -1, Desemprego: -1,
 } as const
 
-const baseSchema = parametrosSchema.superRefine((params, ctx) => {
+const baseSchema = parametrosSchema.transform(params => {
+  const bc = params.coeficientes.bc
+  // Saves/calibrações antigas recebem as referências e tolerâncias novas do BC.
+  if (bc) {
+    for (const chave of [
+      'selicNeutraAa', 'metaDesempregoPct', 'metaDesempregoToleranciaPct', 'metaPibToleranciaPct',
+      'tendenciaIpcaLimiarPp', 'tendenciaIpcaPeso', 'tendenciaDesempregoLimiarPp',
+    ] as const) {
+      if (!Object.hasOwn(bc, chave)) bc[chave] = coeficientes.bc[chave]
+    }
+  }
+  const social = params.coeficientes.social
+  // Calibrações antigas recebem os parâmetros do canal de emprego ausentes na sua versão.
+  if (social) {
+    for (const chave of [
+      'consumoEmpregoPctPibAnualPorPp', 'desempregoLimitePct', 'desempregoTetoPct', 'consumoEmpregoAltaNoLimitePct',
+      'consumoEmpregoInicioAceleracaoPct', 'ipcaDesempregoReferenciaPct', 'ipcaDesempregoPpAnualPorPp',
+    ] as const) {
+      if (!Object.hasOwn(social, chave)) {
+        social[chave] = { ...coeficientes.social[chave], status: chave === 'ipcaDesempregoPpAnualPorPp' ? 'a_confirmar' : 'confirmado' }
+      }
+    }
+  }
+  return params
+}).superRefine((params, ctx) => {
   const registrar = (grupo: string, chave: string, message: string) => {
     ctx.addIssue({ code: 'custom', path: ['coeficientes', grupo, chave], message: `${grupo}.${chave}: ${message}` })
   }
@@ -73,6 +97,35 @@ const baseSchema = parametrosSchema.superRefine((params, ctx) => {
     }
   }
   if (faltamObrigatorios) return
+
+  if (coef(params, 'social', 'ipcaDesempregoPpAnualPorPp') < 0) {
+    registrar('social', 'ipcaDesempregoPpAnualPorPp', 'A sensibilidade do desemprego ao IPCA deve ser positiva ou zero')
+  }
+  if (coef(params, 'social', 'ipcaDesempregoReferenciaPct') >= params.curvaIpcaDesemprego.pontos[0].ipcaPct) {
+    registrar('social', 'ipcaDesempregoReferenciaPct', 'O IPCA neutro deve ficar abaixo do primeiro ponto da curva')
+  }
+
+  const limiteDesemprego = coef(params, 'social', 'desempregoLimitePct')
+  const tetoDesemprego = coef(params, 'social', 'desempregoTetoPct')
+  if (tetoDesemprego < params.iniciais.desempregoPct || tetoDesemprego > 100) {
+    registrar('social', 'desempregoTetoPct', 'O teto deve ficar entre o desemprego de referência e 100%')
+  }
+  const inicioAceleracao = coef(params, 'social', 'consumoEmpregoInicioAceleracaoPct')
+  const altaConsumo = coef(params, 'social', 'consumoEmpregoAltaNoLimitePct')
+  const consumoNoLimitePctPib = altaConsumo * params.iniciais.consumoFamiliasAnualBi / params.iniciais.pibAnualBi
+  const sensibilidadeConsumo = coef(params, 'social', 'consumoEmpregoPctPibAnualPorPp')
+  if (limiteDesemprego < 0 || limiteDesemprego >= params.iniciais.desempregoPct) {
+    registrar('social', 'desempregoLimitePct', 'O limite deve ficar entre zero e o desemprego de referência')
+  }
+  if (inicioAceleracao <= limiteDesemprego || inicioAceleracao >= params.iniciais.desempregoPct) {
+    registrar('social', 'consumoEmpregoInicioAceleracaoPct', 'A aceleração deve começar entre o limite e o desemprego de referência')
+  }
+  if (altaConsumo < 0) {
+    registrar('social', 'consumoEmpregoAltaNoLimitePct', 'A alta do consumo deve ser positiva ou zero')
+  }
+  if (sensibilidadeConsumo < 0 || sensibilidadeConsumo * (params.iniciais.desempregoPct - limiteDesemprego) > consumoNoLimitePctPib) {
+    registrar('social', 'consumoEmpregoPctPibAnualPorPp', 'A sensibilidade inicial deve permitir que o efeito por ponto aumente até o limite')
+  }
 
   const anoMeses = coef(params, 'turno', 'anoMeses')
   const janela = coef(params, 'turno', 'historicoMensal')

@@ -172,11 +172,6 @@
       "status": "confirmado",
       "fonte": "MotorIR §3.4"
     },
-    "eficienciaMinima": {
-      "valor": 0.8,
-      "status": "confirmado",
-      "fonte": "MotorIR §3.5"
-    },
     "sensibilidadeBase": {
       "valor": 150,
       "status": "confirmado",
@@ -393,6 +388,11 @@
       "status": "confirmado",
       "fonte": "MotorBC §2"
     },
+    "selicNeutraAa": {
+      "valor": 7.5,
+      "status": "confirmado",
+      "fonte": "Decisão de Lauro: referência neutra para status monetário"
+    },
     "alvoIpca": {
       "valor": 1.5,
       "status": "confirmado",
@@ -403,10 +403,35 @@
       "status": "confirmado",
       "fonte": "MotorBC §2"
     },
-    "alvoPremio": {
+    "metaDesempregoPct": {
+      "valor": 5,
+      "status": "confirmado",
+      "fonte": "Decisão de Lauro: meta de desemprego para a regra do BC"
+    },
+    "metaDesempregoToleranciaPct": {
       "valor": 0.5,
       "status": "confirmado",
-      "fonte": "MotorBC §2"
+      "fonte": "Decisão de Lauro: faixa de desemprego de 4,5% a 5,5%"
+    },
+    "metaPibToleranciaPct": {
+      "valor": 0.5,
+      "status": "confirmado",
+      "fonte": "Decisão de Lauro: faixa do PIB de 1,5% a 2,5% ao redor do potencial"
+    },
+    "tendenciaIpcaLimiarPp": {
+      "valor": 0.02,
+      "status": "confirmado",
+      "fonte": "Regra de tendência do MotorBC §2.2"
+    },
+    "tendenciaIpcaPeso": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "Regra de tendência do MotorBC §2.2: k = 2"
+    },
+    "tendenciaDesempregoLimiarPp": {
+      "valor": 0.05,
+      "status": "confirmado",
+      "fonte": "Regra de tendência do MotorBC §2.2"
     },
     "selicDefasagemCredito": {
       "valor": 3,
@@ -657,10 +682,40 @@
       "status": "confirmado",
       "fonte": "MotorSocial §5"
     },
-    "desempregoPiso": {
-      "valor": 4,
+    "desempregoLimitePct": {
+      "valor": 1,
       "status": "confirmado",
-      "fonte": "MotorSocial §5"
+      "fonte": "Decisão de calibração de Lauro, docs/pendencias.md, item 25"
+    },
+    "ipcaDesempregoReferenciaPct": {
+      "valor": 4.5,
+      "status": "confirmado",
+      "fonte": "Decisão de calibração de Lauro, docs/pendencias.md, item 25"
+    },
+    "desempregoTetoPct": {
+      "valor": 25,
+      "status": "confirmado",
+      "fonte": "Decisão de calibração de Lauro, docs/pendencias.md, item 25"
+    },
+    "ipcaDesempregoPpAnualPorPp": {
+      "valor": 0.25,
+      "status": "a_confirmar",
+      "fonte": "Proposta de calibração, docs/pendencias.md, item 25"
+    },
+    "consumoEmpregoAltaNoLimitePct": {
+      "valor": 25,
+      "status": "confirmado",
+      "fonte": "Decisão de calibração de Lauro, docs/pendencias.md, item 25"
+    },
+    "consumoEmpregoInicioAceleracaoPct": {
+      "valor": 2,
+      "status": "confirmado",
+      "fonte": "Decisão de calibração de Lauro, docs/pendencias.md, item 25"
+    },
+    "consumoEmpregoPctPibAnualPorPp": {
+      "valor": 0.936,
+      "status": "confirmado",
+      "fonte": "Decisão de calibração de Lauro, docs/pendencias.md, item 25"
     },
     "apertoIpcaInicio": {
       "valor": 4.5,

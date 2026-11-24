@@ -28,10 +28,50 @@ function razaoVariacaoPct(valor: number, referencia: number): number {
   return (valor / referencia - 1) * 100
 }
 
-function desempregoDoMes(estado: EstadoSocial, params: Parametros): number {
+function efeitoIpcaNoDesemprego(ipca12mPct: number, params: Parametros): number {
+  const referencia = coef(params, 'social', 'ipcaDesempregoReferenciaPct')
+  if (ipca12mPct <= referencia) {
+    return (ipca12mPct - referencia) * coef(params, 'social', 'ipcaDesempregoPpAnualPorPp')
+  }
+  const { pontos } = params.curvaIpcaDesemprego
+  const indice = pontos.findIndex(ponto => ipca12mPct <= ponto.ipcaPct)
+  // Acima da maior referência, a curva prolonga a inclinação do último trecho.
+  const fim = indice < 0 ? pontos.length - 1 : indice
+  const superior = pontos[fim]
+  const inferior = pontos[fim - 1] ?? { ipcaPct: referencia, efeitoPpAnual: 0 }
+  const proporcao = (ipca12mPct - inferior.ipcaPct) / (superior.ipcaPct - inferior.ipcaPct)
+  return inferior.efeitoPpAnual + proporcao * (superior.efeitoPpAnual - inferior.efeitoPpAnual)
+}
+
+function desempregoDoMes(estado: EstadoSocial, params: Parametros) {
   const hiato = estado.macro.pibReal12mPct - coef(params, 'macro', 'pibPotencial')
-  const variacao = coef(params, 'social', 'okun') * hiato / coef(params, 'turno', 'anoMeses')
-  return limitar(estado.social.desempregoPct + variacao, coef(params, 'social', 'desempregoPiso'), 100)
+  const efeitoPibAnual = coef(params, 'social', 'okun') * hiato
+  const efeitoIpcaAnual = efeitoIpcaNoDesemprego(estado.macro.ipca12mPct, params)
+  const variacao = (efeitoPibAnual + efeitoIpcaAnual) / coef(params, 'turno', 'anoMeses')
+  const limite = coef(params, 'social', 'desempregoLimitePct')
+  const teto = coef(params, 'social', 'desempregoTetoPct')
+  const anterior = Math.max(limite, estado.social.desempregoPct)
+  const margem = anterior - limite
+  const ritmoQueda = limitar(margem / (params.iniciais.desempregoPct - limite), 0, 1)
+  return {
+    desempregoPct: limitar(anterior + (variacao < 0 ? variacao * ritmoQueda : variacao), limite, teto),
+    efeitosDesempregoPpAnual: { pib: efeitoPibAnual, ipca: efeitoIpcaAnual },
+  }
+}
+
+function consumoEmpregoPctPibAnual(desempregoPct: number, params: Parametros): number {
+  const { consumoFamiliasAnualBi, pibAnualBi, desempregoPct: referencia } = params.iniciais
+  const sensibilidade = coef(params, 'social', 'consumoEmpregoPctPibAnualPorPp')
+  const consumoLinear = (referencia - desempregoPct) * sensibilidade
+  const inicioAceleracao = coef(params, 'social', 'consumoEmpregoInicioAceleracaoPct')
+  if (desempregoPct >= inicioAceleracao) return consumoLinear
+
+  const limite = coef(params, 'social', 'desempregoLimitePct')
+  const progresso = (inicioAceleracao - desempregoPct) / (inicioAceleracao - limite)
+  const consumoNoLimite = coef(params, 'social', 'consumoEmpregoAltaNoLimitePct') * consumoFamiliasAnualBi / pibAnualBi
+  const consumoLinearNoLimite = (referencia - limite) * sensibilidade
+  // O termo quadrático começa em zero e preserva a inclinação na transição.
+  return consumoLinear + progresso ** 2 * (consumoNoLimite - consumoLinearNoLimite)
 }
 
 function calcularMiseria(
@@ -130,7 +170,7 @@ function atualizarSegmentos(
 
 export function motorSocial(estado: EstadoSocial, entradas: EntradasSocial, params: Parametros): ResultadoMotor<Social> {
   const avisos: ResultadoMotor<Social>['avisos'] = []
-  const desempregoPct = desempregoDoMes(estado, params)
+  const { desempregoPct, efeitosDesempregoPpAnual } = desempregoDoMes(estado, params)
   const irVariacao = porClasse(classe => entradas.ir.aliquotasVigentesPct[classe] - params.classes[classe].aliquotaInicialPct)
   const { indice: indiceMiseria, semInadimplencia } = calcularMiseria(estado, entradas, desempregoPct, irVariacao, params)
   if (semInadimplencia) avisos.push({ codigo: 'inadimplenciaFamiliarPendente', params: {} })
@@ -169,6 +209,8 @@ export function motorSocial(estado: EstadoSocial, entradas: EntradasSocial, para
       aprovacaoPorClasse,
       efeitosNivelPorClasse,
       desempregoPct,
+      efeitosDesempregoPpAnual,
+      consumoEmpregoPctPibAnual: consumoEmpregoPctPibAnual(desempregoPct, params),
       indiceMiseria,
       segmentos,
       pressoesExibidas: pressoes.slice(0, tetoPressao).map(segmento => segmento.id),

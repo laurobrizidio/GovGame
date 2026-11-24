@@ -14,18 +14,18 @@ Fixos ou só indicadores: compulsório, tarifas, teto do rotativo, Pix e cartõe
 
 - Valor inicial: **15,0%** (mantida desde junho de 2025). [CONFIRMADO]
 - Reuniões nos **meses pares**. Movimento em múltiplos de **0,25 p.p.**, máximo de **1 p.p.** por reunião. [CONFIRMADO]
-- **Selic alvo** = 15,0 + 1,5 × (IPCA 12m − 4,26) + 0,5 × (PIB 12m − 2,0) + 0,5 × prêmio de risco (p.p. ao ano). [CONFIRMADO; a seção 2.1 propõe substituir a referência de 15 e de 4,26]
+- **Selic alvo** = 15,0 + 1,5 × (IPCA 12m − 4,26) + 0,5 × (PIB 12m − 2,0) (p.p. ao ano). O prêmio de risco não entra na meta. Este é o alvo automático do BC e é independente da Selic neutra. [CONFIRMADO]
 - Movimento = metade da distância até o alvo, arredondada a 0,25 p.p., limitada a ±1 p.p. [CONFIRMADO]
 - Limites da Selic: **−5% a 30%** (definido pelo Lauro). [CONFIRMADO]
-- Com os dados de 2025 o alvo dá 15%: o BC mantém a taxa até algo mudar.
+- Com os dados iniciais de 2025 (IPCA 4,26% e PIB 2,3%), o alvo dá 15,15%.
 - Selic mensal = (1 + Selic anual)^(1/12) − 1 (≈ 1,17% ao mês com 15%). [CONFIRMADO]
 
 ### 2.1 Meta e Selic neutra
 
 - **Meta do IPCA: 3%**, tolerância de 1,5 p.p. (teto 4,5%). Se o IPCA está acima da meta, o BC mantém os juros altos por mais tempo para reduzir consumo e crédito. [CONFIRMADO]
-- **Selic neutra (padrão): 7%.** Acima de 7% é aperto monetário; abaixo é afrouxamento (rótulo possível no painel). [CONFIRMADO]
-- **Selic alvo proposta** = 7 + 1,5 × (IPCA 12m − 3) + 0,5 × (PIB 12m − 2,0) + 0,5 × prêmio de risco. No início dá ≈ 9%, bem abaixo dos 15% iniciais; por isso depende da regra de corte da seção 2.2. [A CONFIRMAR]
-- **Problema de calibração [PENDENTE]:** os efeitos da Selic (freio do PIB, crédito, inadimplência, dólar alvo) usam 15% como referência. Com os coeficientes atuais, uma Selic fixa em 7% leva o PIB 12m a ~4,3% e o IPCA 12m a ~9% no mês 48; a Selic que fecha a meta de 3% fica perto de 17%. Para a neutra valer 7% é preciso reancorar os efeitos (potencial de crescimento, inclinação do freio, inércia inicial dos dados de 2025). Com um freio mais fraco (0,007 em vez de 0,02 p.p. por p.p.) a Selic em 7% ainda leva o IPCA a ~5,8%.
+- **Selic neutra (padrão): 7,5%.** Identifica o status monetário (acima: “aperto”; abaixo: “afrouxamento”; igual: “neutro”). Quando IPCA, desemprego e PIB estiverem nas respectivas metas e estáveis, o alvo calculado pelo BC deve convergir gradualmente para 7,5%. [CONFIRMADO]
+- Fora dessa condição, o alvo do BC é calculado para perseguir as metas das outras variáveis. A regra atual reage aos níveis do IPCA 12m e do PIB 12m; a inclusão das variações e tendências do IPCA e do desemprego está detalhada na seção 2.2.
+- **Problema de calibração [PENDENTE]:** os efeitos da Selic (freio do PIB, crédito, inadimplência, dólar alvo) usam 15% como referência. Com os coeficientes atuais, uma Selic fixa em 7% leva o PIB 12m a ~4,3% e o IPCA 12m a ~9% no mês 48. O canal implementado é indireto: Selic → PIB → desemprego → consumo, PIB e IPCA.
 
 | Selic fixa | PIB 12m (mês 24) | IPCA 12m (mês 48) |
 |---|---|---|
@@ -33,28 +33,30 @@ Fixos ou só indicadores: compulsório, tarifas, teto do rotativo, Pix e cartõe
 | 11% | 3,3% | 6,6% |
 | 7% | 4,3% | 9,0% |
 
-### 2.2 Regra de corte pela tendência do IPCA [CONFIRMADO: lógica; k e N a calibrar]
+### 2.2 Tendências para decisões do BC [CONFIRMADO]
 
-O BC olha a **variação do IPCA 12m**, não só o nível: se o IPCA está caindo em direção à meta, ele pode cortar sem esperar chegar a 3%, para não afetar PIB e demanda. Nas reuniões (meses pares):
+Nas reuniões (meses pares), o BC mede IPCA 12m e desemprego desde a reunião anterior. A tendência do IPCA é o sinal principal; a do desemprego ajusta o ritmo.
 
-- **Queda do IPCA:** d = IPCA 12m da reunião anterior − IPCA 12m atual.
-- **IPCA acima de 3% e caindo (d > 0,02 p.p.):** corta k × d, em múltiplos de 0,25, no máximo 1 p.p., sem descer abaixo do alvo. Ponto de partida: **k = 2** (cada 1 p.p. de queda do IPCA libera 2 p.p. de corte). [A CONFIRMAR]
-- **IPCA acima de 3% e sem cair:** mantém, ou sobe se o alvo pedir.
-- **Estacionamento:** se o IPCA ficar sem cair acima da meta por **N reuniões seguidas** (ponto de partida **N = 3**), o BC sobe 0,25 p.p. por reunião até a queda retomar. [A CONFIRMAR]
-- **IPCA em 3% ou menos:** passo normal, metade da distância até o alvo, arredondada a 0,25.
-- **Dependência:** a regra usa o alvo da seção 2.1. Com o alvo atual da seção 2 (≈ 15,15%) o piso do alvo impediria qualquer corte.
+- **Meta de desemprego para a regra monetária: 5%.** [CONFIRMADO]
+- Se IPCA, desemprego e PIB estiverem estáveis e dentro das respectivas metas, a Selic tende gradualmente à neutra de **7,5%**. A taxa efetiva continua se movendo pelos passos normais das reuniões.
+- Considerar as metas cumpridas quando, em **duas reuniões consecutivas**, o IPCA estiver entre **1,5% e 4,5%**, o desemprego entre **4,5% e 5,5%**, e o PIB entre **1,5% e 2,5%**, e as variações do IPCA e do desemprego entre essas reuniões forem, respectivamente, até **0,02 p.p.** e **0,05 p.p.** Nessa condição, o alvo da Selic passa a 7,5%; a taxa efetiva converge usando o movimento normal de metade da distância, em passos de 0,25 p.p. e máximo de 1 p.p. por reunião. [CONFIRMADO]
+- Uma variação do IPCA até **0,02 p.p.** ou do desemprego até **0,05 p.p.** em qualquer direção é tratada como estável.
+- Para o IPCA, o movimento adicional é **2 × a variação do IPCA 12m**, em p.p., arredondado ao passo de 0,25. Para o desemprego, aumento acima do limiar favorece corte de **0,25 p.p.**; queda acima do limiar favorece alta de **0,25 p.p.** Esses ajustes alteram o ritmo normal de convergência ao alvo e o movimento total permanece limitado a ±1 p.p. por reunião.
+- **IPCA subindo e desemprego subindo:** sinais conflitantes; o BC mantém a taxa na primeira reunião. Se a alta conjunta persistir na reunião seguinte, sobe um passo de 0,25 p.p.
+- **IPCA caindo e desemprego subindo:** os dois sinais favorecem corte. **IPCA e desemprego caindo:** o desemprego reduz o ritmo do corte. **IPCA subindo e desemprego caindo:** os dois sinais favorecem aperto.
+- Sem tendência relevante, o BC segue o movimento normal de metade da distância ao alvo, arredondado a 0,25 p.p.
 
-Simulação (freio atual 0,02, ancoragem do MotorMacro §3.3, dólar parado):
+Simulação da regra anterior, apenas com tendência do IPCA (freio atual 0,02, ancoragem do MotorMacro §3.3, dólar parado):
 
 | Regra | Selic (mês 12 / 48) | IPCA 12m (mês 12 / 48) | PIB 12m (mês 24) |
 |---|---|---|---|
 | Alvo puro, corta já | 9,50 / 12,00 | 3,93 / 5,81 | 3,65 |
 | Histerese rígida (só corta com IPCA ≤ 3%) | 15,00 / 15,00 | 3,78 / 3,55 | 2,30 |
-| Tendência k = 2, sem estacionamento | 14,00 / 13,75 | 3,79 / 4,02 | 2,58 |
-| Tendência k = 3, sem estacionamento | 13,75 / 13,25 | 3,80 / 4,25 | 2,67 |
-| Tendência k = 2 + estacionamento N = 3 | 14,00 / 15,75 | 3,79 / 3,63 | 2,57 |
+| Tendência IPCA somente, k = 2, sem estacionamento (regra anterior) | 14,00 / 13,75 | 3,79 / 4,02 | 2,58 |
+| Tendência IPCA somente, k = 3, sem estacionamento (regra anterior) | 13,75 / 13,25 | 3,80 / 4,25 | 2,67 |
+| Tendência IPCA somente, k = 2 + estacionamento N = 3 (regra anterior) | 14,00 / 15,75 | 3,79 / 3,63 | 2,57 |
 
-- O alvo puro corta cedo demais e superaquece (IPCA volta a 5,8%). A histerese rígida trava a Selic em 15% porque o IPCA estaciona em 3,55%.
+- Esses resultados são da regra anterior, apenas com IPCA; ainda não medem a resposta combinada implementada nesta seção. Neles, o alvo puro corta cedo demais e superaquece (IPCA volta a 5,8%), enquanto a histerese rígida trava a Selic em 15% porque o IPCA estaciona em 3,55%.
 - A tendência corta já no primeiro ano (15% → 14%) com o PIB maior (2,3% → ~2,6%), mas o IPCA para de cair e volta a ~4%. O estacionamento corrige isso: o IPCA fecha o mandato em ~3,6% e continua caindo (~3,3% no mês 72). A meta de 3% não é atingida em 48 meses só pela regra do BC: depende também da política fiscal do jogador.
 - Com k = 1 o resultado é igual ao da histerese, porque a queda por reunião é pequena e o corte arredonda para zero.
 

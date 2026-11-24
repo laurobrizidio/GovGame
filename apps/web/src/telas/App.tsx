@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { parametros2025 as params, preview } from '@govgame/engine'
+import { preview } from '@govgame/engine'
 import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource/ibm-plex-sans/400.css'
 import '@fontsource/ibm-plex-sans/500.css'
 import '@fontsource/ibm-plex-sans/600.css'
 import { Aviso } from '../componentes/base'
 import { Hud, TopBar } from '../componentes/estrutura'
-import { usarPartida } from '../store/partida'
+import { usarParametros, usarPartida } from '../store/partida'
 import { t } from '../viewmodels/textos'
 import { Gastos, Receitas } from './Decisoes'
+import Calibracao from './Calibracao'
 import { Economia, Povo, Tesouro } from './Leitura'
 import Painel from './Painel'
 import { Fechamento, FimDeJogo, Historico } from './Resultados'
@@ -17,10 +18,11 @@ import './governo.css'
 export default function App() {
   const {
     estadoCommitado: estado, rascunhoDecisoes: decisoes, resultadoPendente, ultimoResultado,
-    tela, abaAnterior, ocupado, carregado, erro, carregar, navegar, ajustar, preparar, rever, confirmar, reiniciar,
+    tela, abaAnterior, ocupado, carregado, erro, calibracao, carregar, navegar, ajustar, preparar, rever, confirmar, reiniciar,
   } = usarPartida()
   const bloco = useRef<HTMLElement>(null)
-  const previa = useMemo(() => preview(estado, decisoes, params), [estado, decisoes])
+  const params = usarParametros()
+  const previa = useMemo(() => preview(estado, decisoes, params), [estado, decisoes, params])
 
   useEffect(() => { void carregar() }, [carregar])
   useEffect(() => {
@@ -41,14 +43,17 @@ export default function App() {
 
   const encerrado = estado.fimDeJogo !== undefined
   const aba = tela === 'fechamento' || tela === 'historico' || tela === 'fim' ? abaAnterior : tela
-  const bloqueado = tela === 'fechamento'
+  const bloqueado = tela === 'fechamento' || ocupado
   const edicaoProps = { estado, decisoes, previa, ajustar }
   return <>
     <a className="pular-conteudo" href="#conteudo">{t('pularConteudo')}</a>
     <header className="topo">
       {encerrado ? <div className="barra-topo barra-topo-simples"><strong>{t('marca')}</strong></div>
         : <>
-          <TopBar estado={estado} previa={previa} aba={aba} bloqueado={bloqueado} fecharBloqueado={bloqueado || tela === 'historico'} navegar={navegar} preparar={preparar} />
+          <TopBar estado={estado} previa={previa} aba={aba} bloqueado={bloqueado}
+            fecharBloqueado={bloqueado || tela === 'historico' || tela === 'calibracao'}
+            calibracao={calibracao !== null} navegar={navegar} preparar={preparar}
+          />
           <Hud estado={estado} resultado={ultimoResultado} bloqueado={bloqueado} navegar={navegar} />
         </>}
     </header>
@@ -60,6 +65,7 @@ export default function App() {
       {tela === 'tesouro' && <Tesouro {...edicaoProps} />}
       {tela === 'economia' && <Economia estado={estado} resultado={ultimoResultado} />}
       {tela === 'povo' && <Povo estado={estado} />}
+      {tela === 'calibracao' && calibracao && <Calibracao parametros={params} />}
       {tela === 'fechamento' && resultadoPendente &&
         <Fechamento anterior={estado} resultado={resultadoPendente} ocupado={ocupado} rever={rever} confirmar={() => void confirmar()} />}
       {tela === 'fim' && <FimDeJogo estado={estado} ocupado={ocupado} reiniciar={reiniciar} abrirHistorico={() => navegar('historico')} />}

@@ -81,7 +81,7 @@ describe('mandato de 2025', () => {
       expect(proximoEstado.fiscal.servicos.educacao.abaixoPiso).toBe(false)
     }
     expect(meses.map(({ proximoEstado }) => proximoEstado.fiscal.servicos.administracao.nota)).toEqual([98, 94, 86])
-    expect(meses[1].avisos.map(({ codigo }) => codigo)).toContain('eficienciaAdministracaoPendente')
+    for (const { proximoEstado } of meses) expect(proximoEstado.fluxo.receitaIrBi).toBeCloseTo(35.05)
   })
 
   // MotorOrçamento §7; MotorBC §§2, 5.

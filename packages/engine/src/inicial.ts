@@ -43,7 +43,7 @@ export function criarEstadoInicial(params: Parametros): GameState {
     servicos: Object.fromEntries(MINISTERIOS.map(id => [id, { nota: notaInicial, mesesAbaixoPiso: 0, abaixoPiso: false }])) as PorMinisterio<Servico>,
   }
   const bc: BC = {
-    selicAa: i.selicAa, selicAlvoAa: calcularSelicAlvo(i.ipca12mPct, i.pibReal12mPct, premioRiscoAa ?? 0, params),
+    selicAa: i.selicAa, selicAlvoAa: calcularSelicAlvo(i.ipca12mPct, i.pibReal12mPct, params),
     crescimentoCredito12mPct: i.crescimentoCredito12mPct, inadimplenciaPct: i.inadimplenciaPct,
     reservasUsdBi: i.reservasUsdBi, vendaReservasUsdBi: 0,
   }
@@ -52,7 +52,7 @@ export function criarEstadoInicial(params: Parametros): GameState {
     aprovacaoGeral: i.aprovacaoPorClasse === null ? null
       : somar(CLASSES.map(id => i.aprovacaoPorClasse![id] * params.classes[id].participacaoPct / 100)),
     efeitosNivelPorClasse: { E: 0, D: 0, C: 0, B: 0, A: 0 },
-    desempregoPct: i.desempregoPct, indiceMiseria: i.desempregoPct + i.ipca12mPct,
+    desempregoPct: i.desempregoPct, consumoEmpregoPctPibAnual: 0, indiceMiseria: i.desempregoPct + i.ipca12mPct,
     segmentos: params.segmentos.map(({ id }) => ({ id, satisfacao: coef(params, 'social', 'satisfacaoInicial'), pressionando: false })),
     pressoesExibidas: [],
   }
@@ -66,7 +66,6 @@ export function criarEstadoInicial(params: Parametros): GameState {
   }
   const fluxo = motorOrcamento({ macro, fiscal, series, bc }, decisoes, {
     arrecadacaoBi: somar(CLASSES.map(id => params.classes[id].baseTributavelMensalBi * decisoes.aliquotasPct[id] / 100)),
-    eficienciaAdministracaoPct: 100,
   }, {
     variacaoRenunciasBi: 0, subsidiosBi: somar(SETORES.map(id => decisoes.incentivosBi[id].subsidio)),
   }, params).saidas
