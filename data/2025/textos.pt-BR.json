@@ -134,6 +134,7 @@
     "receitaTotalProjetada": "Receita total",
     "consumo": "Tributos sobre consumo",
     "empresas": "Tributos sobre empresas",
+    "outrasReceitas": "Previdência e outras receitas",
     "incentivosTitulo": "Incentivos setoriais",
     "incentivosSub": "R$ bilhões por ano · {total} setores · 2 instrumentos",
     "incentivosAjuda": "A renúncia reduz a receita e o subsídio direto integra a despesa primária. O efeito sobre o PIB tem defasagem.",

@@ -64,6 +64,7 @@ export type Fluxo = {
   receitaIrBi: number
   receitaConsumoBi: number
   receitaEmpresasBi: number
+  receitaOutrasBi: number
   variacaoRenunciasBi: number
   receitaTotalBi: number
   gastosBi: PorMinisterio<number>

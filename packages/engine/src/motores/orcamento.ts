@@ -31,7 +31,10 @@ export function motorOrcamento(
   const receitaMultiplicador = estado.macro.pibNominalMensalBi / (params.iniciais.pibAnualBi / mesesAno)
   const receitaConsumoBi = params.iniciais.receitasConsumoBi * receitaMultiplicador
   const receitaEmpresasBi = params.iniciais.receitasEmpresasBi * receitaMultiplicador
-  const receitaTotalBi = ir.arrecadacaoBi + receitaConsumoBi + receitaEmpresasBi + subsidios.variacaoRenunciasBi
+  // Receitas previdenciárias e demais, fora do IR, do consumo e das empresas (docs/pendencias.md §24).
+  const receitaOutrasBi = coef(params, 'orcamento', 'receitasOutrasBi') * receitaMultiplicador
+  const receitaTotalBi = ir.arrecadacaoBi + receitaConsumoBi + receitaEmpresasBi + receitaOutrasBi
+    + subsidios.variacaoRenunciasBi
   const gastosBi = {} as PorMinisterio<number>
   const pisosBi = {} as PorMinisterio<number>
 
@@ -47,7 +50,9 @@ export function motorOrcamento(
   const resultadoPrimarioBi = receitaTotalBi - despesaPrimariaBi
   const selicMediaAa = media(estado.series.selicAa)
   const premioAa = estado.fiscal.premioRiscoAa ?? premioReservas(estado.bc.reservasUsdBi, params)
-  const taxaJurosMensal = Math.max(0, taxaMensal(selicMediaAa, mesesAno) + taxaMensal(premioAa, mesesAno))
+  // O custo médio da dívida acompanha só parte da Selic: a dívida tem prazos e indexadores diferentes (§24).
+  const custoDividaAa = selicMediaAa * coef(params, 'orcamento', 'custoDividaFracaoSelic')
+  const taxaJurosMensal = Math.max(0, taxaMensal(custoDividaAa, mesesAno) + taxaMensal(premioAa, mesesAno))
   const jurosBi = estado.fiscal.dividaBi * taxaJurosMensal / 100
   const saldoAmortizavelBi = Math.max(0, estado.fiscal.caixaBi - coef(params, 'orcamento', 'caixaMinimoBi'))
   const amortizacaoBi = Math.min(decisoes.amortizacaoBi, saldoAmortizavelBi, estado.fiscal.dividaBi)
@@ -56,7 +61,7 @@ export function motorOrcamento(
 
   return {
     saidas: {
-      receitaIrBi: ir.arrecadacaoBi, receitaConsumoBi, receitaEmpresasBi,
+      receitaIrBi: ir.arrecadacaoBi, receitaConsumoBi, receitaEmpresasBi, receitaOutrasBi,
       variacaoRenunciasBi: subsidios.variacaoRenunciasBi,
       receitaTotalBi, gastosBi, pisosBi, previdenciaBi, subsidiosBi: subsidios.subsidiosBi,
       despesaPrimariaBi, resultadoPrimarioBi, jurosBi, resultadoNominalBi: resultadoPrimarioBi - jurosBi,

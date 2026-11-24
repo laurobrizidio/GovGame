@@ -60,9 +60,9 @@ function preparar(): [Parameters<typeof motorSocial>[0], Parameters<typeof motor
         nivelEfetivoBi, impulsoPibPct: 0, impulsoIpcaPct: 0,
       },
       fluxo: {
-        receitaIrBi: 35, receitaConsumoBi: 60, receitaEmpresasBi: 44, variacaoRenunciasBi: 0,
-        receitaTotalBi: 139, gastosBi, pisosBi, previdenciaBi: 85.6, subsidiosBi: 3.6, despesaPrimariaBi: 188,
-        resultadoPrimarioBi: -49, jurosBi: 117, resultadoNominalBi: -166, amortizacaoBi: 0, estimado: true,
+        receitaIrBi: 35, receitaConsumoBi: 60, receitaEmpresasBi: 44, receitaOutrasBi: 44.4, variacaoRenunciasBi: 0,
+        receitaTotalBi: 183.4, gastosBi, pisosBi, previdenciaBi: 85.6, subsidiosBi: 3.6, despesaPrimariaBi: 188,
+        resultadoPrimarioBi: -4.6, jurosBi: 80.7, resultadoNominalBi: -85.3, amortizacaoBi: 0, estimado: true,
       },
       popularidade: [],
     },

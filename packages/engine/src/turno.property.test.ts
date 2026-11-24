@@ -43,6 +43,7 @@ describe('propriedades do fechamento mensal', () => {
         const subsidiosDiretosBi = SETORES.reduce((total, setor) => total + decisoes.incentivosBi[setor].subsidio, 0)
         const gastosMinisteriaisBi = Object.values(fluxo.gastosBi).reduce((total, gasto) => total + gasto, 0)
         const receitaSemRenunciasBi = fluxo.receitaIrBi + fluxo.receitaConsumoBi + fluxo.receitaEmpresasBi
+          + fluxo.receitaOutrasBi
 
         expect(fluxo.variacaoRenunciasBi).toBeCloseTo(variacaoRenunciasBi, 8)
         expect(fluxo.subsidiosBi).toBeCloseTo(subsidiosDiretosBi, 8)
