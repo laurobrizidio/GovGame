@@ -95,35 +95,13 @@ pnpm lint
 pnpm sim            # tools/simulador: bots jogam 48 turnos e geram relatório
 ```
 
-Antes de dar uma tarefa por concluída: `pnpm typecheck && pnpm test`.
-
----
-
-## 5. Onde ler o quê
-
-O Codex carrega o `AGENTS.md` da pasta em que a sessão trabalha, somado a este. **Antes de mexer numa pasta, leia o `AGENTS.md` dela.**
-
-| Arquivo | Conteúdo |
-|---|---|
-| `packages/engine/AGENTS.md` | Princípios do motor, API pública, formato de resultado, estado, transação de fechamento, testes de motor |
-| `data/AGENTS.md` | Arquivos de dados, status dos coeficientes, unidades |
-| `apps/web/AGENTS.md` | Telas, **paleta de cores e tokens**, acessibilidade, Tailwind, componentes, view-models, estado da UI |
-| `apps/server/AGENTS.md` | Persistência em SQLite |
-| `tools/simulador/AGENTS.md` | Simulador em lote e calibração |
-| `docs/motores-resumo.md` | Resumo dos 7 motores (números exatos estão nos documentos) |
-| `docs/pendencias.md` | Decisões em aberto e divergências mockup × documento |
-| `docs/orquestracao.md` | Subagentes do Codex: fases, pastas por agente, regras |
-| `docs/primeiros-passos.md` | Ordem sugerida de implementação |
-
----
+Antes de dar uma tarefa por concluída: `pnpm typecheck && pnpm test`
 
 ## 6. Decisões de design já tomadas (não reabrir sem pedido)
 
-- **STF fora do jogo por enquanto.** O MotorOrçamento só expõe o estado "abaixo do Piso constitucional" para uso futuro; o nome da regra continua **Piso constitucional**.
 - **Não existe MotorGabinete.**
 - **Não existe MotorEventos por enquanto** (sem calamidades nem escândalos). Quando voltar, definir o dono do gatilho do socorro de calamidade.
 - Socorro financeiro foi incorporado ao **socorro de calamidade** (um só tipo): entra no Resultado Primário, fica **fora** do Risco Fiscal e entra no estoque da dívida.
-- Sem penalidade extra no Risco Fiscal por corte de imposto sem compensação.
 - Fuga de capital fiscal virou só prêmio de risco; a fuga de capital propriamente dita é exclusiva do MotorIR.
 - Selic definida pelo BC por regra; o jogador não a controla.
 - O MotorSocial é o único escritor de Aprovação e Desemprego; os demais motores devolvem só variações.
@@ -133,7 +111,7 @@ O Codex carrega o `AGENTS.md` da pasta em que a sessão trabalha, somado a este.
 
 ## 7. Convenções de código
 
-- TypeScript `strict`; sem `any`; sem `Date`/`Math.random` no motor.
+- TypeScript `strict`; sem `any`; 
 - Nomes de domínio em **português** (`Orcamento`, `Aprovacao`, `fecharMes`), conforme os documentos; termos técnicos de infraestrutura em inglês.
 - Textos visíveis ao jogador em **pt-BR**, só em `textos.pt-BR.json`.
 - Funções pequenas e puras; sem estado compartilhado mutável.
@@ -147,4 +125,4 @@ O Codex carrega o `AGENTS.md` da pasta em que a sessão trabalha, somado a este.
 
 Agentes em `.codex/agents/`: `motor-dev`, `data-curator`, `ui-dev`, `sim-dev`, `reviewer`. A sessão principal orquestra; um nível só. **Cada agente escreve só na sua pasta.** Fases, tabela de pastas e regras: `docs/orquestracao.md`.
 
-**Bloqueio:** não implemente o que depende das pendências 1 e 2 (`docs/pendencias.md`) sem decisão do Lauro.
+**Bloqueio:** não implemente o que depende das pendências (`docs/pendencias.md`) sem decisão do Lauro.
